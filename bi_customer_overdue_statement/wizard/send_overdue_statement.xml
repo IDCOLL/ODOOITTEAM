@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+        <record id="view_send_overdue_statement" model="ir.ui.view">
+            <field name="name">send.overdue.statement.wizard</field>
+            <field name="model">send.overdue.statement</field>
+            <field name="arch" type="xml">
+                <form string="Send Statement">
+                    
+                        <field name="confirm_text"/>
+                    
+                    <footer>
+                    	<button name="send_overdue_statement_customer"  string="Send Overdue Payment" type="object" />
+                    </footer>
+                </form>
+            </field>
+                   
+        </record>
+
+        <record id="action_send_overdue_statement" model="ir.actions.act_window">
+            <field name="name">Send Overdue Payment</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">send.overdue.statement</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+        <record id="view_send_customer_wizard_statement" model="ir.ui.view">
+            <field name="name">customer.statement.wizard.wizard</field>
+            <field name="model">customer.statement.wizard</field>
+            <field name="arch" type="xml">
+                <form string="Send Statement">
+                    <h2>
+                        <field name="confirm_text"/>
+                    </h2>
+                    <group string="Duration">
+                        <field name="overdue_duration" />
+                    </group>
+                    <group colspan="2" col="4">
+                            <field name="from_date" attrs="{'invisible':[('overdue_duration','!=','custom')],'required':[('overdue_duration','=','custom')]}"/>
+                            <field name="to_date" attrs="{'invisible':[('overdue_duration','!=','custom')],'required':[('overdue_duration','=','custom')]}"/>
+                    </group>
+                    <footer>
+                        <button name="send_overdue_statement_customer"  string="Send Customer Statement" type="object" class="btn btn-primary"/>
+                    </footer>
+                </form>
+            </field>
+                   
+        </record>
+
+        <record id="action_send_customer_wizard_statement" model="ir.actions.act_window">
+            <field name="name">Customer Statement</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">customer.statement.wizard</field>
+            <field name="binding_view_types">form</field>
+            <field name="view_mode">form</field>
+            <field name="target">new</field>
+        </record>
+
+   
+        
+        <record id="id_wizard_customer_statement_action" model="ir.actions.act_window">
+            <field name="name">Customer Custom Statements</field>
+            <field name="res_model">customer.statement.wizard</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="view_send_customer_wizard_statement"/>
+            <field name="binding_model_id" ref="base.model_res_partner"/>
+            <field name="target">new</field>
+
+        </record>
+</odoo>

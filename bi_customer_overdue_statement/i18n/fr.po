@@ -1,0 +1,1512 @@
+# Translation of Odoo Server.
+# This file contains the translation of the following modules:
+# 	* bi_customer_overdue_statement
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: Odoo Server 13.0\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2021-03-04 05:12+0000\n"
+"PO-Revision-Date: 2021-03-04 05:12+0000\n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: \n"
+"Plural-Forms: \n"
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,body_html:bi_customer_overdue_statement.email_template_customer_monthly_statement
+#: model:mail.template,body_html:bi_customer_overdue_statement.email_template_customer_weekly_statement
+msgid ""
+"\n"
+"\t\t\t\t<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
+"\t\t\t\t\t<p>Dear ${object.name},</p>\n"
+"\t\t\t\t\t<p>\n"
+"\t\t\t\t\tWe have attached your payment statement.\n"
+"\t\t\t\t\tPlease kindly check.\n"
+"\t\t\t\t\t</p>\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\tBest Regards,\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\t   <br/>\n"
+"\t\t\t\t${user.company_id.name}\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\t\t<br/>\n"
+"\t\t\t\t</div>\n"
+"\t\t\t\t\n"
+"\t\t\t"
+msgstr ""
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,body_html:bi_customer_overdue_statement.email_template_customer_statement
+msgid ""
+"\n"
+"\t\t\t\t<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
+"\t\t\t\t\t<p>Dear ${object.name},</p>\n"
+"\t\t\t\t\t<p>\n"
+"\t\t\t\t\tWe have attached your payment statement.\n"
+"\t\t\t\t\tPlease kindly check.\n"
+"\t\t\t\t\t</p>\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\tBest Regards,\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\t   <br/>\n"
+"\t\t\t\t${user.company_id.name}\n"
+"\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\t\t<br/>\n"
+"\t\t\t\t</div>\n"
+"\t\t\t\t\n"
+"\t\t\t\t\n"
+"\t\t\t"
+msgstr ""
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,body_html:bi_customer_overdue_statement.email_template_customer_statement_filter
+msgid ""
+"\n"
+"\t\t\t\t<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
+"\t\t\t\t\t<p>Dear ${object.name},</p>\n"
+"\t\t\t\t% if object.statement_from_date and object.statement_to_date:\n"
+"\t\t\t\t\t<p>\n"
+"\t\t\t\t\tWe have attached your payment statement between ${object.statement_from_date} and ${object.statement_to_date}.\n"
+"\t\t\t\t\tPlease kindly check.\n"
+"\t\t\t\t\t</p>\n"
+"\t\t\t\t% else\n"
+"\t\t\t\t\t<p>\n"
+"\t\t\t\t\tWe have attached your payment statement.\n"
+"\t\t\t\t\tPlease kindly check.\n"
+"\n"
+"\t\t\t\t\t</p>\n"
+"\t\t\t\t% endif\n"
+"\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\tBest Regards,\n"
+"\t\t\t\t<br/>\n"
+"\t\t\t\t   <br/>\n"
+"\t\t\t\t${user.company_id.name}\n"
+"\n"
+"\t\t\t\t<br/><br/><br/>\n"
+"\t\t\t\t</div>\n"
+"\t\n"
+"\t\t\t"
+msgstr ""
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,body_html:bi_customer_overdue_statement.email_template_customer_statement_custom_
+msgid ""
+"\n"
+"<div style=\"font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); \">\n"
+"\n"
+"    <p>Dear ${object.name},</p>\n"
+"% if object.statement_from_date and object.statement_to_date:\n"
+"    <p>\n"
+"\n"
+"    We have attched your payment statement between ${object.custom_from_date} and ${object.custom_to_date}.\n"
+"    Please kindly check.\n"
+"\n"
+"    </p>\n"
+"% else\n"
+"    <p>\n"
+"    We have attched your payment statement.\n"
+"    Please kindly check.\n"
+"\n"
+"    </p>\n"
+"% endif\n"
+"\n"
+"<br/>\n"
+"Best Regards,\n"
+"<br/>\n"
+"   <br/>\n"
+"${user.name}\n"
+"\n"
+"<br/>\n"
+"<br/>\n"
+"\n"
+"\n"
+"\n"
+"    <br/>\n"
+"\n"
+"</div>\n"
+"            "
+msgstr ""
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__monthly_payment_amount_due_amt
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__monthly_payment_amount_due_amt
+msgid " Filter Monthly Balance Due"
+msgstr "Filtrer le solde mensuel dû"
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,subject:bi_customer_overdue_statement.email_template_customer_monthly_statement
+msgid "${user.company_id.name} Customer Monthly Statement"
+msgstr "$ {user.company_id.name} Relevé mensuel du client"
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,subject:bi_customer_overdue_statement.email_template_customer_statement
+#: model:mail.template,subject:bi_customer_overdue_statement.email_template_customer_statement_custom_
+#: model:mail.template,subject:bi_customer_overdue_statement.email_template_customer_statement_filter
+msgid "${user.company_id.name} Customer Statement"
+msgstr "Déclaration client $ {user.company_id.name}"
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,subject:bi_customer_overdue_statement.email_template_customer_weekly_statement
+msgid "${user.company_id.name} Customer Weekly Statement"
+msgstr "Relevé hebdomadaire du client $ {user.company_id.name}"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__first_thirty_day
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__first_thirty_days_custom
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__first_thirty_day
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__first_thirty_days_custom
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+msgid "0-30"
+msgstr "0-30"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__first_thirty_day_filter
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__first_thirty_day_filter
+msgid "0-30 filter"
+msgstr "0-30 filtre"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__customer_statement_wizard__overdue_duration__30
+msgid "30 Days"
+msgstr "30 jours"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__thirty_sixty_days
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__thirty_sixty_days_custom
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__thirty_sixty_days
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__thirty_sixty_days_custom
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+msgid "30-60"
+msgstr "30-60"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__thirty_sixty_days_filter
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__thirty_sixty_days_filter
+msgid "30-60 filter"
+msgstr "Filtre 30-60"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__customer_statement_wizard__overdue_duration__60
+msgid "60 Days"
+msgstr "60 jours"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__sixty_ninty_days
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__sixty_ninty_days_custom
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__sixty_ninty_days
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__sixty_ninty_days_custom
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+msgid "60-90"
+msgstr "60-90"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__sixty_ninty_days_filter
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__sixty_ninty_days_filter
+msgid "60-90 filter"
+msgstr "Filtre 60-90"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__customer_statement_wizard__overdue_duration__90
+msgid "90 Days"
+msgstr "90 jours"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__ninty_plus_days
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__ninty_plus_days_custom
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__ninty_plus_days
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__ninty_plus_days_custom
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+msgid "90+"
+msgstr "90+"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__ninty_plus_days_filter
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__ninty_plus_days_filter
+msgid "90+ filter"
+msgstr "90+ filtre"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "<b>Ending Balance</b>"
+msgstr "<b> Solde final </b>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "<b>Initial Balance</b>"
+msgstr "<b> Solde initial </b>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid ""
+"<br/>\n"
+"\t\t\t\t\t\t<br/>\n"
+"\t\t\t\t\t\t<span>Dear Sir/Madam,</span><br/>\n"
+"\t\t\t\t\t\t<br/>\n"
+"\t\t\t\t\t\t<span>Some payments on your account are still due. Please find details below.</span><br/>\n"
+"\t\t\t\t\t\t<br/>\n"
+"\t\t\t\t\t\t<span>Thank you.</span><br/>\n"
+"\t\t\t\t\t\t<span>Best Regards,</span><br/>"
+msgstr ""
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid ""
+"<span>Customer account statement</span><br/>\n"
+"\t\t\t\t\t\t<span>Date : </span>"
+msgstr ""
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_outstanding_pdf
+msgid "<span>Due Date</span>"
+msgstr "<span> Date d'échéance </span>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_outstanding_pdf
+msgid "<span>Invoice Date</span>"
+msgstr "<span> Date de facturation </span>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_outstanding_pdf
+msgid "<span>Total</span>"
+msgstr "<span> Total </span>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+msgid ""
+"<strong style=\"margin-left:10px;\">\n"
+"\t\t\t\t\t\t\t\t\t<span>To : </span></strong>"
+msgstr ""
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+msgid "<strong><span>Date : </span></strong>"
+msgstr "<strong> <span> Date: </span> </strong>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+msgid "<strong><span>From : </span></strong>"
+msgstr "<strong> <span> De: </span> </strong>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid "<strong>Balance :</strong>"
+msgstr "<strong> Solde: </strong>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "<strong>Balance Due :</strong>"
+msgstr "<strong> Solde dû: </strong>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+msgid "<strong>Balance Due:</strong>"
+msgstr "<strong> Solde dû: </strong>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid "<strong>Sub-Total :</strong>"
+msgstr "<strong> Sous-total: </strong>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "<strong>Total Amount OverDue :</strong>"
+msgstr "<strong> Montant total en souffrance: </strong>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+msgid "<strong>Total Amount OverDue:</strong>"
+msgstr "<strong> Montant total en souffrance: </strong>"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "Account"
+msgstr "Compte"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_account_common_report
+msgid "Account Common Report"
+msgstr "Rapport commun de compte"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__period__all
+msgid "All"
+msgstr "Toute"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__amount_residual
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__amount_residual
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__residual
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__amount_residual
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__amount_residual
+msgid "Amount Due"
+msgstr "Montant dû"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__amount_residual_signed
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__amount_residual_signed
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__residual_signed
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__amount_residual_signed
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__amount_residual_signed
+msgid "Amount Due Signed"
+msgstr "Montant dû signé"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__auto_monthly_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__auto_monthly_statement
+msgid "Auto Monthly Statement"
+msgstr "Relevé mensuel automatique"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__auto_weekly_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__auto_weekly_statement
+msgid "Auto Weekly Statement"
+msgstr "Relevé hebdomadaire automatique"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.server,name:bi_customer_overdue_statement.autometic_send_monthly_statement_cron_ir_actions_server
+#: model:ir.cron,cron_name:bi_customer_overdue_statement.autometic_send_monthly_statement_cron
+#: model:ir.cron,name:bi_customer_overdue_statement.autometic_send_monthly_statement_cron
+msgid "Automatic Send Customer Monthly Statement"
+msgstr "Envoi automatique du relevé mensuel du client"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.server,name:bi_customer_overdue_statement.autometic_send_weekly_statement_cron_ir_actions_server
+#: model:ir.cron,cron_name:bi_customer_overdue_statement.autometic_send_weekly_statement_cron
+#: model:ir.cron,name:bi_customer_overdue_statement.autometic_send_weekly_statement_cron
+msgid "Automatic Send Customer Weekly Statement"
+msgstr "Relevé hebdomadaire automatique du client"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.server,name:bi_customer_overdue_statement.autometic_send_overdue_statement_cron_ir_actions_server
+#: model:ir.cron,cron_name:bi_customer_overdue_statement.autometic_send_overdue_statement_cron
+#: model:ir.cron,name:bi_customer_overdue_statement.autometic_send_overdue_statement_cron
+msgid "Automatic Send Overdue Statement"
+msgstr "Relevé de retard d'envoi automatique"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_account_move__result
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__result
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__result
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__result
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__result
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__result
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Balance"
+msgstr "Équilibre"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__payment_amount_due_amt
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__payment_amount_due_amt
+msgid "Balance Due"
+msgstr "Solde dû"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_outstanding_report_wizard
+msgid "Cancel"
+msgstr "Annuler"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__bi_statement_line__state__cancel
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__bi_vendor_statement_line__state__cancel
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__custom_statement_line__state__cancel
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__monthly_statement_line__state__cancel
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__weekly_statement_line__state__cancel
+msgid "Cancelled"
+msgstr "Annulé"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_account_invoice_excel
+msgid "Close"
+msgstr "Fermer"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid "Communication"
+msgstr "la communication"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_res_company
+msgid "Companies"
+msgstr "Entreprises"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__company_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__company_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__company_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__company_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__company_id
+msgid "Company"
+msgstr "Entreprise"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_res_config_settings
+msgid "Config Settings"
+msgstr "Paramètres de configuration"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__confirm_text
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_send_overdue_statement__confirm_text
+msgid "Confirm Text"
+msgstr "Confirmer le texte"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_res_partner
+msgid "Contact"
+msgstr "Contacter"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__create_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__create_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__create_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__create_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__create_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel__create_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__create_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_send_overdue_statement__create_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__create_uid
+msgid "Created by"
+msgstr "Créé par"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__create_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__create_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__create_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__create_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__create_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel__create_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__create_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_send_overdue_statement__create_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__create_date
+msgid "Created on"
+msgstr "Créé sur"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_account_move__credit_amount
+msgid "Credit/paid"
+msgstr "Crédit / payé"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__currency_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__currency_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__currency_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__currency_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__currency_id
+msgid "Currency"
+msgstr "Devise"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__customer_statement_wizard__overdue_duration__custom
+msgid "Custom Date Range"
+msgstr "Plage de dates personnalisée"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__custom_from_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__custom_from_date
+msgid "Custom From Date"
+msgstr "Date de début personnalisée"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_custom_statement_line
+msgid "Custom Statement Line"
+msgstr "Ligne de relevé personnalisée"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__custom_statement_line_ids
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__custom_statement_line_ids
+msgid "Custom Statement Lines"
+msgstr "Lignes de relevé personnalisées"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__custom_to_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__custom_to_date
+msgid "Custom To Date"
+msgstr "Personnalisé à ce jour"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__partner_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__partner_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__partner_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__partner_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__partner_id
+msgid "Customer"
+msgstr "Cliente"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_customer_statement_custom_print
+msgid "Customer Custom Statement"
+msgstr "Déclaration personnalisée du client"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.act_window,name:bi_customer_overdue_statement.id_wizard_customer_statement_action
+msgid "Customer Custom Statements"
+msgstr "Déclarations personnalisées du client"
+
+#. module: bi_customer_overdue_statement
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#, python-format
+msgid "Customer Filter Statement email sent to %s, "
+msgstr "E-mail de déclaration de filtrage client envoyé à% s,"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_customer_monthly_print
+msgid "Customer Monthly Statement"
+msgstr "Relevé mensuel du client"
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,report_name:bi_customer_overdue_statement.email_template_customer_monthly_statement
+msgid "Customer Monthly Statement Report"
+msgstr "Rapport de relevé mensuel du client"
+
+#. module: bi_customer_overdue_statement
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#, python-format
+msgid "Customer Monthly Statement email sent to %s-%s"
+msgstr "E-mail de relevé mensuel du client envoyé à% s-% s"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_customer_overdue_print
+msgid "Customer Overdue Statement"
+msgstr "Relevé de retard du client"
+
+#. module: bi_customer_overdue_statement
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#, python-format
+msgid "Customer Overdue Statement email sent to %s-%s"
+msgstr "E-mail de relevé de retard client envoyé à% s-% s"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.act_window,name:bi_customer_overdue_statement.action_send_customer_wizard_statement
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_customer_statement_filter_print
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_customert_print
+msgid "Customer Statement"
+msgstr "Déclaration à la clientèle"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_bi_statement_line
+msgid "Customer Statement Line"
+msgstr "Ligne de relevé client"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__customer_statement_line_ids
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__customer_statement_line_ids
+msgid "Customer Statement Lines"
+msgstr "Lignes de relevé client"
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,report_name:bi_customer_overdue_statement.email_template_customer_statement
+#: model:mail.template,report_name:bi_customer_overdue_statement.email_template_customer_statement_custom_
+#: model:mail.template,report_name:bi_customer_overdue_statement.email_template_customer_statement_filter
+msgid "Customer Statement Report"
+msgstr "Rapport de relevé client"
+
+#. module: bi_customer_overdue_statement
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#, python-format
+msgid "Customer Statement email sent to %s, "
+msgstr "E-mail de relevé client envoyé à% s,"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+msgid "Customer Statement:"
+msgstr "Déclaration à la clientèle:"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Customer Statements"
+msgstr "Déclarations des clients"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Customer Statements Filter By Date"
+msgstr "Déclarations des clients Filtrer par date"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_customer_weekly_print
+msgid "Customer Weekly Statement"
+msgstr "Relevé hebdomadaire du client"
+
+#. module: bi_customer_overdue_statement
+#: model:mail.template,report_name:bi_customer_overdue_statement.email_template_customer_weekly_statement
+msgid "Customer Weekly Statement Report"
+msgstr "Rapport de relevé hebdomadaire du client"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__balance_invoice_ids
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__balance_invoice_ids
+msgid "Customer move lines"
+msgstr "Lignes de déménagement client"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "Date"
+msgstr "Date"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_report_bi_customer_overdue_statement_report_outstanding_pdf__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_send_overdue_statement__display_name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__display_name
+msgid "Display Name"
+msgstr "Afficher un nom"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__bi_statement_line__state__draft
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__bi_vendor_statement_line__state__draft
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__custom_statement_line__state__draft
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__monthly_statement_line__state__draft
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__weekly_statement_line__state__draft
+msgid "Draft"
+msgstr "Brouillon"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid "Due"
+msgstr "Payable"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__invoice_date_due
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__invoice_date_due
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__date_due
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__invoice_date_due
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__invoice_date_due
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid "Due Date"
+msgstr "Date d'échéance"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__overdue_duration
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_send_customer_wizard_statement
+msgid "Duration"
+msgstr "Durée"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_mail_template
+msgid "Email Templates"
+msgstr "Modèles d'e-mails"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__end_date
+msgid "End Date"
+msgstr "Date de fin"
+
+#. module: bi_customer_overdue_statement
+#: code:addons/bi_customer_overdue_statement/wizard/res_config_settings.py:0
+#, python-format
+msgid "Enter Valid Overdue Statement Date Range"
+msgstr "Entrez une plage de dates de relevé de retard valide"
+
+#. module: bi_customer_overdue_statement
+#: code:addons/bi_customer_overdue_statement/wizard/res_config_settings.py:0
+#, python-format
+msgid "Enter Valid Statement Date Range"
+msgstr "Entrez une plage de dates de relevé valide"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel__file_name
+msgid "Excel File"
+msgstr "Fichier Excel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel__excel_file
+msgid "Excel Report for outstanding invoice"
+msgstr "Rapport Excel pour facture impayée"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__filter_payment_amount_due_amt
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__filter_payment_amount_due_amt
+msgid "Filter Balance Due"
+msgstr "Solde du filtre dû"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__filter_statement
+msgid "Filter Statement"
+msgstr "Déclaration de filtrage"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__filter_payment_amount_due_amt_supplier
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__filter_payment_amount_due_amt_supplier
+msgid "Filter Supplier Balance Due"
+msgstr "Filtrer le solde du fournisseur à payer"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__total_filter
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__total_filter
+msgid "Filter Total"
+msgstr "Filtre total"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__monthly_payment_amount_overdue_amt
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__monthly_payment_amount_overdue_amt
+msgid "Filter Total Monthly Overdue Amount"
+msgstr "Filtrer le montant total mensuel en souffrance"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__filter_payment_amount_overdue_amt
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__filter_payment_amount_overdue_amt
+msgid "Filter Total Overdue Amount"
+msgstr "Filtrer le montant total en souffrance"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__filter_payment_amount_overdue_amt_supplier
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__filter_payment_amount_overdue_amt_supplier
+msgid "Filter Total Supplier Overdue Amount"
+msgstr "Filtrer le montant total en souffrance du fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__weekly_payment_amount_due_amt
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__weekly_payment_amount_due_amt
+msgid "Filter Weekly Balance Due"
+msgstr "Filtrer le solde hebdomadaire dû"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__weekly_payment_amount_overdue_amt
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__weekly_payment_amount_overdue_amt
+msgid "Filter Weekly Total Overdue Amount"
+msgstr "Filtrer le montant total en souffrance hebdomadaire"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__weekly_days__4
+msgid "Friday"
+msgstr "vendredi"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__from_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__statement_from_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__statement_from_date
+msgid "From Date"
+msgstr "Partir de la date"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_account_invoice_excel
+msgid "Genrated xls File"
+msgstr "Fichier xls généré"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_outstanding_report_wizard
+msgid "Genrating Outstanding Report"
+msgstr "Générer un rapport exceptionnel"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Get Statement"
+msgstr "Obtenir la déclaration"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_report_bi_customer_overdue_statement_report_outstanding_pdf__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_send_overdue_statement__id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__id
+msgid "ID"
+msgstr "identifiant"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid ""
+"If not specified by the latest follow-up level, it will send from the "
+"default email template"
+msgstr ""
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__initial_bal
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__initial_bal
+msgid "Initial Balance"
+msgstr "Balance initiale"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__initial_supp_bal
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__initial_supp_bal
+msgid "Initial Supplier Balance"
+msgstr "Solde initial du fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__invoice_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__invoice_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__invoice_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__invoice_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__invoice_id
+msgid "Invoice"
+msgstr "Facture d'achat"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__invoice_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__invoice_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__date_invoice
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__invoice_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__invoice_date
+msgid "Invoice Date"
+msgstr "Date de la facture"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "Invoice Number"
+msgstr "Numéro de facture"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Invoice line"
+msgstr "Ligne de facture"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "Invoices/Credit"
+msgstr "Factures / crédit"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+msgid "Invoices/Debit"
+msgstr "Factures / Débit"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__amount_total
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__amount_total
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__amount_total
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__amount_total
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__amount_total
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Invoices/Debits"
+msgstr "Factures / débits"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__journal_id
+msgid "Journal"
+msgstr "Journal"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_account_move
+msgid "Journal Entries"
+msgstr "Entrées de journal"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_account_move_line
+msgid "Journal Item"
+msgstr "Article de journal"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_report_bi_customer_overdue_statement_report_outstanding_pdf____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_send_overdue_statement____last_update
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line____last_update
+msgid "Last Modified on"
+msgstr "Dernière modification le"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__write_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__write_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__write_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__write_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__write_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel__write_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__write_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_send_overdue_statement__write_uid
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__write_uid
+msgid "Last Updated by"
+msgstr "Dernière mise à jour par"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__write_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__write_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__write_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__write_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__write_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_excel__write_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__write_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_send_overdue_statement__write_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__write_date
+msgid "Last Updated on"
+msgstr "Dernière mise à jour le"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__weekly_days__0
+msgid "Monday"
+msgstr "Lundi"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__period__monthly
+msgid "Monthly"
+msgstr "Mensuelle"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+msgid "Monthly Customer Statement:"
+msgstr "Relevé client mensuel:"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__statement_days
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__statement_days
+msgid "Monthly Send Day"
+msgstr "Jour d'envoi mensuel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__monthly_template_id
+msgid "Monthly Statement  Template"
+msgstr "Modèle de relevé mensuel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__monthly_template_id
+msgid "Monthly Statement Email Template"
+msgstr "Modèle d'e-mail de relevé mensuel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_monthly_statement_line
+msgid "Monthly Statement Line"
+msgstr "Ligne de relevé mensuel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__monthly_statement_line_ids
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__monthly_statement_line_ids
+msgid "Monthly Statement Lines"
+msgstr "Lignes de relevé mensuel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__name
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__name
+msgid "Name"
+msgstr "Nom"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__number
+msgid "Number"
+msgstr "Nombre"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__opt_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__opt_statement
+msgid "Opt Statement"
+msgstr "Déclaration d'Opt"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_outstanding_report_wizard
+msgid "Or"
+msgstr "Ou"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.act_window,name:bi_customer_overdue_statement.action_outstanding_report_wizard
+msgid "Outstanding"
+msgstr "Exceptionnelle"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_outstanding_print
+#: model:ir.ui.menu,name:bi_customer_overdue_statement.menu_outstanding_report
+msgid "Outstanding Report"
+msgstr "Rapport exceptionnel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.act_window,name:bi_customer_overdue_statement.action_outstanding_report_excel
+msgid "Outstanding Report "
+msgstr "Rapport exceptionnel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_outstanding_report_excel
+msgid "Outstanding Report Excel"
+msgstr "Rapport exceptionnel Excel"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_outstanding_report_wizard
+msgid "Outstanding Report Wizard"
+msgstr "Assistant de rapport exceptionnel"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_search
+msgid "Overdue Customers"
+msgstr "Clients en retard"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__overdue_days
+msgid "Overdue Date"
+msgstr "Date de retard"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__overdue_statement_template_id
+msgid "Overdue Statement  Template"
+msgstr "Modèle de relevé de retard"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__overdue_statement_template_id
+msgid "Overdue Statement Email Template"
+msgstr "Modèle d'e-mail de relevé de retard"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__overdue_days
+msgid "Overdue Statement Send Date"
+msgstr "Date d'envoi du relevé en retard"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid "Paid"
+msgstr "Payé"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__payment_id
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__payment_id
+msgid "Payment"
+msgstr "Paiement"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+msgid "Payments/Credit"
+msgstr "Paiements / crédit"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__credit_amount
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__credit_amount
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__credit_amount
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__credit_amount
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__credit_amount
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Payments/Credits"
+msgstr "Paiements / Crédits"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "Payments/Debit"
+msgstr "Paiements / Débit"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__period
+msgid "Period"
+msgstr "Point final"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__bi_statement_line__state__posted
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__bi_vendor_statement_line__state__posted
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__custom_statement_line__state__posted
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__monthly_statement_line__state__posted
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__weekly_statement_line__state__posted
+msgid "Posted"
+msgstr "Publié"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Print Customer Statement"
+msgstr "Imprimer la déclaration du client"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_outstanding_report_wizard
+msgid "Print Excel"
+msgstr "Imprimer Excel"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Print Filter Statement"
+msgstr "Déclaration de filtre d'impression"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Print Overdue Payments"
+msgstr "Imprimer les paiements en retard"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_outstanding_report_wizard
+msgid "Print PDF"
+msgstr "Imprimer PDF"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Print Statement"
+msgstr "Imprimer la déclaration"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Print Vendor Statement"
+msgstr "Imprimer la déclaration du fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Print overdue payments report independent of follow-up line"
+msgstr "Imprimer le rapport des paiements en souffrance indépendamment de la ligne de suivi"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__customer_statement_wizard__overdue_duration__3m
+msgid "Quarter"
+msgstr "Trimestre"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_monthly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_filter_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_supplier_statement
+msgid "Ref"
+msgstr "Réf"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__reference
+msgid "Reference"
+msgstr "Référence"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid "Reference number"
+msgstr "Numéro de réference"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_report_bi_customer_overdue_statement_report_outstanding_pdf
+msgid "Report Outstanding Pdf"
+msgstr "Rapport exceptionnel Pdf"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__weekly_days__5
+msgid "Saturday"
+msgstr "samedi"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_customer_statement_wizard
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__send_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__send_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_send_customer_wizard_statement
+msgid "Send Customer Statement"
+msgstr "Envoyer la déclaration du client"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Send Filter Statement"
+msgstr "Envoyer une déclaration de filtre"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Send Filter Statement Report From Filtered Lines"
+msgstr "Envoyer un rapport de déclaration de filtre à partir de lignes filtrées"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__send_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__send_overdue_statement
+msgid "Send Overdue Customer Statement"
+msgstr "Envoyer un relevé client en retard"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.act_window,name:bi_customer_overdue_statement.action_send_overdue_statement
+#: model:ir.actions.act_window,name:bi_customer_overdue_statement.id_wizard_window_action
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_send_overdue_statement
+msgid "Send Overdue Payment"
+msgstr "Envoyer un paiement en retard"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_send_overdue_statement
+msgid "Send Overdue Statement"
+msgstr "Envoyer un relevé de retard"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_send_customer_wizard_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_send_overdue_statement
+msgid "Send Statement"
+msgstr "Envoyer une déclaration"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_outstanding_report_wizard__start_date
+msgid "Start Date"
+msgstr "Date de début"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_account_res_config_settings_inherited
+msgid "Statement and Overdue Payments"
+msgstr "Relevé et paiements en retard"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Statement lines"
+msgstr "Lignes de relevé"
+
+#. module: bi_customer_overdue_statement
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#, python-format
+msgid "Statement sent to %s - %s"
+msgstr "Relevé envoyé à% s -% s"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__state
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__state
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__state
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__state
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__state
+msgid "Status"
+msgstr "Statut"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__weekly_days__6
+msgid "Sunday"
+msgstr "dimanche"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__payment_amount_due_amt_supplier
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__payment_amount_due_amt_supplier
+msgid "Supplier Balance Due"
+msgstr "Solde du fournisseur dû"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__vendor_statement_from_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__vendor_statement_from_date
+msgid "Supplier From Date"
+msgstr "Date de début du fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Supplier Invoice line"
+msgstr "Ligne de facture fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_supplier_filter_print
+#: model:ir.actions.report,name:bi_customer_overdue_statement.report_supplier_print
+msgid "Supplier Statement"
+msgstr "Déclaration du fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__vendor_statement_line_ids
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__vendor_statement_line_ids
+msgid "Supplier Statement Lines"
+msgstr "Lignes de relevé fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__vendor_statement_to_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__vendor_statement_to_date
+msgid "Supplier To Date"
+msgstr "Fournisseur à ce jour"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__supplier_invoice_ids
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__supplier_invoice_ids
+msgid "Supplier move lines"
+msgstr "Lignes de déménagement fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__weekly_days__3
+msgid "Thursday"
+msgstr "jeudi"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_customer_statement_wizard__to_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__statement_to_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__statement_to_date
+msgid "To Date"
+msgstr "À ce jour"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__today_date
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__today_date
+msgid "Today Date"
+msgstr "La date d'aujourd'hui"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__custom_total
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__total
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__custom_total
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__total
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.filter_report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_custom_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_overdue_statement
+msgid "Total"
+msgstr "Totale"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Total Balance"
+msgstr "Solde total"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Total Credits"
+msgstr "Crédits totaux"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Total Debits"
+msgstr "Débits totaux"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__payment_amount_overdue_amt
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__payment_amount_overdue_amt
+msgid "Total Overdue Amount"
+msgstr "Montant total en souffrance"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_statement_line__amount_total_signed
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_bi_vendor_statement_line__amount_total_signed
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_custom_statement_line__amount_total_signed
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_monthly_statement_line__amount_total_signed
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_weekly_statement_line__amount_total_signed
+msgid "Total Signed"
+msgstr "Total signé"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__payment_amount_overdue_amt_supplier
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__payment_amount_overdue_amt_supplier
+msgid "Total Supplier Overdue Amount"
+msgstr "Montant total en souffrance du fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__weekly_days__1
+msgid "Tuesday"
+msgstr "mardi"
+
+#. module: bi_customer_overdue_statement
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#: code:addons/bi_customer_overdue_statement/models/res_partner.py:0
+#, python-format
+msgid "Unsupported report type %s found."
+msgstr "Type de rapport non pris en charge% s trouvé."
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_bi_vendor_statement_line
+msgid "Vendor Statement Line"
+msgstr "Ligne de déclaration du fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Vendor Statements"
+msgstr "Déclarations du fournisseur"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_partner_inherit_followup_form
+msgid "Vendor Statements Filter By Date"
+msgstr "Déclarations du fournisseur Filtrer par date"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__filter_statement__all_statement
+msgid "View All Statements Along With Filter Statements"
+msgstr "Afficher toutes les instructions avec les instructions de filtre"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__filter_statement__filter_only
+msgid "View Only Filter Statements"
+msgstr "Afficher uniquement les instructions de filtre"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__weekly_days__2
+msgid "Wednesday"
+msgstr "Mercredi"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields.selection,name:bi_customer_overdue_statement.selection__res_company__period__weekly
+msgid "Weekly"
+msgstr "Hebdomadaire"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.report_customer_weekly_statement
+msgid "Weekly Customer Statement:"
+msgstr "Relevé client hebdomadaire:"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__weekly_days
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__weekly_days
+msgid "Weekly Send Day"
+msgstr "Jour d'envoi hebdomadaire"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_config_settings__weekly_template_id
+msgid "Weekly Statement  Template"
+msgstr "Modèle de relevé hebdomadaire"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_company__weekly_template_id
+msgid "Weekly Statement Email Template"
+msgstr "Modèle d'e-mail de relevé hebdomadaire"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model,name:bi_customer_overdue_statement.model_weekly_statement_line
+msgid "Weekly Statement Line"
+msgstr "Ligne de relevé hebdomadaire"
+
+#. module: bi_customer_overdue_statement
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_partner__weekly_statement_line_ids
+#: model:ir.model.fields,field_description:bi_customer_overdue_statement.field_res_users__weekly_statement_line_ids
+msgid "Weekly Statement Lines"
+msgstr "Lignes de relevé hebdomadaire"
+
+#. module: bi_customer_overdue_statement
+#: model_terms:ir.ui.view,arch_db:bi_customer_overdue_statement.view_account_res_config_settings_inherited
+msgid "select between 1 to 30"
+msgstr "sélectionnez entre 1 et 30"
