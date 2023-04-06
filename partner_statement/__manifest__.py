@@ -2,12 +2,12 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 {
-    "name": "Partner Statement",
-    "version": "15.0.0.0.0",
+    "name": "Partner Statement SA",
+    "version": "16.0.0",
     "category": "Accounting & Finance",
-    "summary": "OCA Financial Reports",
-    "author": "AKTIV SOFTWARE",
-    "website": "http://www.aktivsoftware.com",
+    "summary": "Customer Statements South Africa",
+    "author": "THE IT TEAM",
+    "website": "https://www.the-it-team.co.za",
     "license": "AGPL-3",
     "depends": ["account"],
     "external_dependencies": {"python": ["dateutil"]},
