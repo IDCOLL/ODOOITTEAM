@@ -1,0 +1,220 @@
+<?xml version="1.0"?>
+<odoo>
+	<!-- Mail template is done in a NOUPDATE block
+		 so users can freely customize/delete them -->
+	<data noupdate="1">
+		<!-- Default follow up message -->
+
+
+		<record id="email_template_customer_weekly_statement" model="mail.template">
+			<field name="name">Customer Weekly Statement Email</field>
+			<field name="email_from">{{(user.company_id.partner_id.email or '')}}</field>
+			<field name="subject">{{user.company_id.name}} Customer Weekly Statement</field>
+			<field name="email_to">{{object.email}}</field>
+			<field name="lang">{{object.lang}}</field>
+<!--			<field name="report_template" ref="bi_customer_overdue_statement.report_customer_weekly_print"/>-->
+<!--			<field name="report_name">Customer Weekly Statement Report</field>-->
+			<field name="model_id" ref="base.model_res_partner"/>
+			<field name="auto_delete" eval="True"/>
+
+			<field name="body_html" type="html">
+				<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); ">
+
+					<p>Dear <t t-out="object.name or ''"/></p>
+					<p>
+					We have attached your payment statement.
+					Please kindly check.
+
+					</p>
+				<br/>
+				Best Regards,
+				<br/>
+				   <br/>
+				<t t-out="user.company_id.name or ''"/>
+
+				<br/>
+				<br/>
+
+
+				</div>
+			</field>
+
+		</record>
+
+		<record id="email_template_customer_monthly_statement" model="mail.template">
+			<field name="name">Customer Monthly Statement Email</field>
+			<field name="email_from">{{(user.company_id.partner_id.email or '')}}</field>
+			<field name="subject">{{user.company_id.name}} Customer Monthly Statement</field>
+			<field name="email_to">{{object.email}}</field>
+			<field name="lang">{{object.lang}}</field>
+<!--			<field name="report_template" ref="bi_customer_overdue_statement.report_customer_monthly_print"/>-->
+<!--			<field name="report_name">Customer Monthly Statement Report</field>-->
+			<field name="model_id" ref="base.model_res_partner"/>
+			<field name="auto_delete" eval="True"/>
+			<field name="body_html" type="html">
+				<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); ">
+
+					<p>Dear <t t-out="object.name or ''"></t></p>
+					<p>
+					We have attached your payment statement.
+					Please kindly check.
+
+					</p>
+				<br/>
+				Best Regards,
+				<br/>
+				   <br/>
+				<t t-out="user.company_id.name  or ''"></t>
+
+				<br/>
+				<br/>
+
+
+				</div>
+			</field>
+		</record>
+
+	   <record id="email_template_customer_statement" model="mail.template">
+			<field name="name">Customer Statement email</field>
+			<field name="email_from">{{(user.company_id.partner_id.email or '')}}</field>
+			<field name="subject">{{user.company_id.name}} Customer Statement</field>
+			<field name="email_to">{{object.email}}</field>
+			<field name="lang">{{object.lang}}</field>
+<!--			 <field name="report_template" ref="bi_customer_overdue_statement.report_customert_print"/>-->
+<!--			<field name="report_name">Customer Statement Report</field>-->
+			<field name="model_id" ref="base.model_res_partner"/>
+			<field name="auto_delete" eval="True"/>
+			<field name="body_html" type="html">
+				<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); ">
+					<p>Dear <t t-out="object.name or ''"></t>,</p>
+					<p>
+					We have attached your payment statement.
+					Please kindly check.
+					</p>
+				<br/>
+				Best Regards,
+				<br/>
+				   <br/>
+				<t t-out="user.company_id.name  or ''"></t>
+
+				<br/>
+				<br/>
+					<br/>
+				</div>
+				
+			</field>
+		</record>
+
+	   <record id="email_template_customer_over_due_statement" model="mail.template">
+			<field name="name">Customer Overdue Statement email</field>
+			<field name="email_from">{{(user.company_id.partner_id.email or '')}}</field>
+			<field name="subject">{{user.company_id.name}} Customer Statement</field>
+			<field name="email_to">{{object.email}}</field>
+			<field name="lang">{{object.lang}}</field>
+<!--			 <field name="report_template" ref="bi_customer_overdue_statement.report_customer_overdue_print"/>-->
+<!--			<field name="report_name">Customer Overdue Statement Report</field>-->
+			<field name="model_id" ref="base.model_res_partner"/>
+			<field name="auto_delete" eval="True"/>
+			<field name="body_html" type="html">
+				<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); ">
+					<p>Dear <t t-out="object.name or ''"></t>,</p>
+					<p>
+					We have attached your payment statement.
+					Please kindly check.
+					</p>
+				<br/>
+				Best Regards,
+				<br/>
+				   <br/>
+				<t t-out="user.company_id.name  or ''"></t>
+
+				<br/>
+				<br/>
+					<br/>
+				</div>
+				
+			</field>
+		</record>
+		<record id="email_template_customer_statement_filter" model="mail.template">
+			<field name="name">Customer Filtered Statement email</field>
+			<field name="email_from">{{(user.company_id.partner_id.email or '')}}</field>
+			<field name="subject">{{user.company_id.name}} Customer Statement</field>
+			<field name="email_to">{{object.email}}</field>
+			<field name="lang">{{object.lang}}</field>
+<!--			<field name="report_template"-->
+<!--				ref="bi_customer_overdue_statement.report_customer_statement_filter_print" />-->
+<!--			<field name="report_name">Customer Statement Report</field>-->
+			<field name="model_id" ref="base.model_res_partner" />
+			<field name="auto_delete" eval="True" />
+			<field name="body_html" type="html">
+				<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); ">
+					<p>Dear <t t-out="object.name or ''"></t>,</p>
+				<t t-if="object.statement_from_date and object.statement_to_date">
+					<p>
+					We have attached your payment statement between <t t-out="object.statement_from_date"></t> and <t t-out="object.statement_to_date"></t>.
+					Please kindly check.
+					</p>
+				</t>
+		        <t t-else="">
+					<p>
+					We have attached your payment statement.
+					Please kindly check.
+
+					</p>
+				</t>
+
+				<br/>
+				Best Regards,
+				<br/>
+				   <br/>
+				<t t-out="user.company_id.name  or ''"></t>
+
+				<br/><br/><br/>
+				</div>
+	
+			</field>
+		</record>
+
+        <record id="email_template_customer_statement_custom_" model="mail.template">
+            <field name="name">Customer Statement email</field>
+            <field name="email_from">{{(user.email or '')}}</field>
+            <field name="subject">{{user.company_id.name}} Customer Statement</field>
+            <field name="email_to">{{object.email}}</field>
+            <field name="lang">{{object.lang}}</field>
+<!--            <field name="report_template" ref="bi_customer_overdue_statement.report_customer_statement_custom_print" />-->
+<!--            <field name="report_name">Customer Statement Report</field>-->
+            <field name="model_id" ref="base.model_res_partner" />
+            <field name="auto_delete" eval="True" />
+
+			<field name="body_html" type="html">
+				<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); ">
+					<p>Dear <t t-out="object.name or ''"></t>,</p>
+				<t t-if="object.statement_from_date and object.statement_to_date">
+					<p>
+					We have attached your payment statement between <t t-out="object.custom_from_date"></t> and <t t-out="object.custom_to_date"></t>.
+					Please kindly check.
+					</p>
+				</t>
+		        <t t-else="">
+					<p>
+					We have attached your payment statement.
+					Please kindly check.
+
+					</p>
+				</t>
+
+				<br/>
+				Best Regards,
+				<br/>
+				   <br/>
+				<t t-out="user.company_id.name  or ''"></t>
+
+				<br/><br/><br/>
+				</div>
+	
+			</field>
+
+        </record>
+
+	</data>
+</odoo>
