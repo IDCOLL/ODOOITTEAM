@@ -54,11 +54,11 @@
                         <field name="number_partner_ids" readonly="1" invisible="1" />
                         <field
                             name="filter_partners_non_due"
-                            attrs="{'invisible': [('number_partner_ids', '=', 1)]}"
+                            invisible="[('number_partner_ids', '=', 1)]"
                         />
                         <field
                             name="filter_negative_balances"
-                            attrs="{'invisible': [('number_partner_ids', '=', 1)]}"
+                            invisible="[('number_partner_ids', '=', 1)]"
                         />
                     </group>
                 </group>

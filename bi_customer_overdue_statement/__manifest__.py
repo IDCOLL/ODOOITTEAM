@@ -3,7 +3,7 @@
 
 {
 	'name': 'Customer Statement and Customer Overdue Payments Vendor Bank Statements Reports Odoo',
-	'version': '16.0.0.1',
+	'version': '17.0',
 	'category': 'Accounting',
 	'summary': 'Print customer statement report print vendor statement payment reminder customer payment followup send customer statements customer account statement reports print overdue statement reports send overdue statement print supplier statement partner statement',
 	'description': """

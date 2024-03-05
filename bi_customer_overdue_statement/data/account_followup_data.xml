@@ -12,15 +12,15 @@
 			<field name="subject">{{user.company_id.name}} Customer Weekly Statement</field>
 			<field name="email_to">{{object.email}}</field>
 			<field name="lang">{{object.lang}}</field>
-			<field name="report_template" ref="bi_customer_overdue_statement.report_customer_weekly_print"/>
-			<field name="report_name">Customer Weekly Statement Report</field>
+<!--			<field name="report_template" ref="bi_customer_overdue_statement.report_customer_weekly_print"/>-->
+<!--			<field name="report_name">Customer Weekly Statement Report</field>-->
 			<field name="model_id" ref="base.model_res_partner"/>
 			<field name="auto_delete" eval="True"/>
 
 			<field name="body_html" type="html">
 				<div style="font-family: 'Lucica Grande', Ubuntu, Arial, Verdana, sans-serif; font-size: 12px; color: rgb(34, 34, 34); background-color: rgb(255, 255, 255); ">
 
-					<p>Dear <t t-out="object.name or ''"></t></p>
+					<p>Dear <t t-out="object.name or ''"/></p>
 					<p>
 					We have attached your payment statement.
 					Please kindly check.
@@ -30,7 +30,7 @@
 				Best Regards,
 				<br/>
 				   <br/>
-				<t t-out="user.company_id.name  or ''"></t>
+				<t t-out="user.company_id.name or ''"/>
 
 				<br/>
 				<br/>
@@ -47,8 +47,8 @@
 			<field name="subject">{{user.company_id.name}} Customer Monthly Statement</field>
 			<field name="email_to">{{object.email}}</field>
 			<field name="lang">{{object.lang}}</field>
-			<field name="report_template" ref="bi_customer_overdue_statement.report_customer_monthly_print"/>
-			<field name="report_name">Customer Monthly Statement Report</field>
+<!--			<field name="report_template" ref="bi_customer_overdue_statement.report_customer_monthly_print"/>-->
+<!--			<field name="report_name">Customer Monthly Statement Report</field>-->
 			<field name="model_id" ref="base.model_res_partner"/>
 			<field name="auto_delete" eval="True"/>
 			<field name="body_html" type="html">
@@ -80,8 +80,8 @@
 			<field name="subject">{{user.company_id.name}} Customer Statement</field>
 			<field name="email_to">{{object.email}}</field>
 			<field name="lang">{{object.lang}}</field>
-			 <field name="report_template" ref="bi_customer_overdue_statement.report_customert_print"/>
-			<field name="report_name">Customer Statement Report</field>
+<!--			 <field name="report_template" ref="bi_customer_overdue_statement.report_customert_print"/>-->
+<!--			<field name="report_name">Customer Statement Report</field>-->
 			<field name="model_id" ref="base.model_res_partner"/>
 			<field name="auto_delete" eval="True"/>
 			<field name="body_html" type="html">
@@ -111,8 +111,8 @@
 			<field name="subject">{{user.company_id.name}} Customer Statement</field>
 			<field name="email_to">{{object.email}}</field>
 			<field name="lang">{{object.lang}}</field>
-			 <field name="report_template" ref="bi_customer_overdue_statement.report_customer_overdue_print"/>
-			<field name="report_name">Customer Overdue Statement Report</field>
+<!--			 <field name="report_template" ref="bi_customer_overdue_statement.report_customer_overdue_print"/>-->
+<!--			<field name="report_name">Customer Overdue Statement Report</field>-->
 			<field name="model_id" ref="base.model_res_partner"/>
 			<field name="auto_delete" eval="True"/>
 			<field name="body_html" type="html">
@@ -141,9 +141,9 @@
 			<field name="subject">{{user.company_id.name}} Customer Statement</field>
 			<field name="email_to">{{object.email}}</field>
 			<field name="lang">{{object.lang}}</field>
-			<field name="report_template"
-				ref="bi_customer_overdue_statement.report_customer_statement_filter_print" />
-			<field name="report_name">Customer Statement Report</field>
+<!--			<field name="report_template"-->
+<!--				ref="bi_customer_overdue_statement.report_customer_statement_filter_print" />-->
+<!--			<field name="report_name">Customer Statement Report</field>-->
 			<field name="model_id" ref="base.model_res_partner" />
 			<field name="auto_delete" eval="True" />
 			<field name="body_html" type="html">
@@ -181,8 +181,8 @@
             <field name="subject">{{user.company_id.name}} Customer Statement</field>
             <field name="email_to">{{object.email}}</field>
             <field name="lang">{{object.lang}}</field>
-            <field name="report_template" ref="bi_customer_overdue_statement.report_customer_statement_custom_print" />
-            <field name="report_name">Customer Statement Report</field>
+<!--            <field name="report_template" ref="bi_customer_overdue_statement.report_customer_statement_custom_print" />-->
+<!--            <field name="report_name">Customer Statement Report</field>-->
             <field name="model_id" ref="base.model_res_partner" />
             <field name="auto_delete" eval="True" />
 

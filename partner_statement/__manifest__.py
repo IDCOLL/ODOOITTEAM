@@ -3,7 +3,7 @@
 
 {
     "name": "Partner Statement SA",
-    "version": "16.0.1",
+    "version": "17.0",
     "category": "Accounting & Finance",
     "summary": "Customer Statements South Africa",
     "author": "THE IT TEAM",

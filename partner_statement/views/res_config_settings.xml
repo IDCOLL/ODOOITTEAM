@@ -6,7 +6,7 @@
 			<field name="inherit_id" ref="account.res_config_settings_view_form" />
 			<field name="arch" type="xml">
             <xpath
-					expr="//div[hasclass('settings')]/div[@data-key='account']/div[1]"
+					expr="//form/app/block"
 					position="after">
 				<div class="col-12 col-lg-6 o_setting_box">
                     <div class="o_setting_left_pane">
@@ -19,7 +19,7 @@
                         </div>
                         <div
                             class="content-group"
-                            attrs="{'invisible': [('group_activity_statement', '=', False), ('group_outstanding_statement', '=', False)]}"
+                            invisible="[('group_activity_statement', '=', False), ('group_outstanding_statement', '=', False)]"
                         >
                             <div class="row mt16">
                                 <label
@@ -72,7 +72,7 @@
                         </div>
                         <div
                             class="text-muted"
-                            attrs="{'invisible': [('group_outstanding_statement', '=', False)]}"
+                            invisible="[('group_outstanding_statement', '=', False)]"
                         >
                             Please set defaults under Activity Statements.
                         </div>

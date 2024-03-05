@@ -36,8 +36,8 @@
                         <field name="overdue_duration" />
                     </group>
                     <group colspan="2" col="4">
-                            <field name="from_date" attrs="{'invisible':[('overdue_duration','!=','custom')],'required':[('overdue_duration','=','custom')]}"/>
-                            <field name="to_date" attrs="{'invisible':[('overdue_duration','!=','custom')],'required':[('overdue_duration','=','custom')]}"/>
+                            <field name="from_date" invisible="[('overdue_duration','!=','custom')]" required="[('overdue_duration','=','custom')]"/>
+                            <field name="to_date" invisible="[('overdue_duration','!=','custom')]" required="[('overdue_duration','=','custom')]"/>
                     </group>
                     <footer>
                         <button name="send_overdue_statement_customer"  string="Send Customer Statement" type="object" class="btn btn-primary"/>

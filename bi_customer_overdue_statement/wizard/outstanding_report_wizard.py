@@ -4,7 +4,7 @@
 
 from odoo import models, fields, api, _
 import io
-from odoo.exceptions import except_orm
+# from odoo.exceptions import except_orm
 from datetime import datetime
 import collections
 import base64
@@ -27,7 +27,7 @@ class outstanding_report_wizard(models.TransientModel):
 		if self.start_date and self.end_date:
 
 			if self.start_date > self.end_date:
-				raise except_orm('Invalid Action!', 'From date cannot be greater that to date.')
+				raise ValueError('From date cannot be greater than to date.')
 
 	def print_outstanding_report(self):
 		res_partner_obj =  self.env['res.partner']
