@@ -1,5 +1,115 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <odoo>
-    <!-- Settings view temporarily removed to fix installation issues -->
-    <!-- Will be added back once module is working -->
+    <record model="ir.ui.view" id="res_config_settings_view_form_inherited_simple">
+        <field name="name">res.config.settings.view.form.inherited.partner.statement.simple</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority">90</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <!-- Try the most common approach for Odoo 17 account settings -->
+            <xpath expr="//div[@data-key='account']" position="inside">
+                <h2>Partner Statements</h2>
+                <div class="row mt16 o_settings_container">
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="group_activity_statement"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="group_activity_statement">Enable Activity Statements</label>
+                            <div class="text-muted">
+                                Generate activity statements showing all partner transactions between two dates
+                            </div>
+                            <div class="content-group" invisible="not group_activity_statement">
+                                <div class="row mt16">
+                                    <label for="default_aging_type" class="col-3 o_light_label">Default Aging Method</label>
+                                    <field name="default_aging_type" class="col-9"/>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <field name="default_show_aging_buckets" class="oe_inline"/>
+                                        <label for="default_show_aging_buckets" class="o_light_label">Show Aging Buckets by Default</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <field name="default_filter_partners_non_due" class="oe_inline"/>
+                                        <label for="default_filter_partners_non_due" class="o_light_label">Exclude Partners with No Due Entries by Default</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <field name="default_filter_negative_balances" class="oe_inline"/>
+                                        <label for="default_filter_negative_balances" class="o_light_label">Exclude Negative Balances by Default</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-lg-6 o_setting_box">
+                        <div class="o_setting_left_pane">
+                            <field name="group_outstanding_statement"/>
+                        </div>
+                        <div class="o_setting_right_pane">
+                            <label for="group_outstanding_statement">Enable Outstanding Statements</label>
+                            <div class="text-muted">
+                                Generate outstanding statements showing all open transactions up to a specific date
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
+
+    <!-- Fallback using the new Odoo 17 <setting> tag approach -->
+    <record model="ir.ui.view" id="res_config_settings_view_form_inherited_fallback">
+        <field name="name">res.config.settings.view.form.inherited.partner.statement.fallback</field>
+        <field name="model">res.config.settings</field>
+        <field name="priority">95</field>
+        <field name="inherit_id" ref="account.res_config_settings_view_form" />
+        <field name="arch" type="xml">
+            <!-- Using Odoo 17's new setting tag approach -->
+            <xpath expr="//form" position="inside">
+                <div class="app_settings_block" data-string="Partner Statements" data-key="partner_statements">
+                    <h2>Partner Statements</h2>
+                    <div class="row mt16 o_settings_container">
+                        <setting id="partner_statement_activity" 
+                                 string="Enable Activity Statements"
+                                 help="Generate activity statements showing all partner transactions between two dates">
+                            <field name="group_activity_statement"/>
+                            <div class="content-group" invisible="not group_activity_statement">
+                                <div class="row mt16">
+                                    <label for="default_aging_type" class="col-3 o_light_label">Default Aging Method</label>
+                                    <field name="default_aging_type" class="col-9"/>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <field name="default_show_aging_buckets" class="oe_inline"/>
+                                        <label for="default_show_aging_buckets" class="o_light_label">Show Aging Buckets by Default</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <field name="default_filter_partners_non_due" class="oe_inline"/>
+                                        <label for="default_filter_partners_non_due" class="o_light_label">Exclude Partners with No Due Entries by Default</label>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <field name="default_filter_negative_balances" class="oe_inline"/>
+                                        <label for="default_filter_negative_balances" class="o_light_label">Exclude Negative Balances by Default</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </setting>
+                        <setting id="partner_statement_outstanding" 
+                                 string="Enable Outstanding Statements"
+                                 help="Generate outstanding statements showing all open transactions up to a specific date">
+                            <field name="group_outstanding_statement"/>
+                        </setting>
+                    </div>
+                </div>
+            </xpath>
+        </field>
+    </record>
 </odoo>
