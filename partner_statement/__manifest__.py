@@ -20,9 +20,9 @@
         "views/res_config_settings.xml",
         "wizard/statement_wizard.xml",
     ],
-    'assets': {
-        'web.assets_backend': [
-            'partner_statement/static/src/scss/layout_statement.scss',
+    "assets": {
+        "web.assets_backend": [
+            "partner_statement/static/src/scss/layout_statement.scss",
         ]
     },
     "installable": True,
