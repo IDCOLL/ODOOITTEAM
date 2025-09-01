@@ -11,8 +11,17 @@ class OutstandingStatement(models.AbstractModel):
     _name = "report.partner_statement.outstanding_statement"
     _description = "Partner Outstanding Statement"
 
+    def _get_account_type_mapping(self, account_type):
+        """Map old account types to new Odoo 17 account types"""
+        mapping = {
+            'receivable': 'asset_receivable',
+            'payable': 'liability_payable'
+        }
+        return mapping.get(account_type, account_type)
+
     def _display_lines_sql_q1(self, partners, date_end, account_type):
         partners = tuple(partners)
+        mapped_account_type = self._get_account_type_mapping(account_type)
         return str(
             self._cr.mogrify(
                 """
@@ -54,7 +63,7 @@ class OutstandingStatement(models.AbstractModel):
                 WHERE l2.date <= %(date_end)s
             ) as pc ON pc.credit_move_id = l.id
             WHERE l.partner_id IN %(partners)s
-                AND acc.account_type = %(account_type)s
+                AND acc.account_type = %(mapped_account_type)s
                 AND (
                   (pd.id IS NOT NULL AND
                       pd.max_date <= %(date_end)s) OR

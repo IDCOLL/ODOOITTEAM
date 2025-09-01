@@ -6,39 +6,54 @@
         <field name="priority">90</field>
         <field name="inherit_id" ref="account.res_config_settings_view_form" />
         <field name="arch" type="xml">
-            <xpath expr="//block[@title='Invoicing']" position="after">
-                <block title="Partner Statements" id="partner_statement_section">
-                    <setting id="partner_statement_activity" title="Enable Activity Statements">
-                        <field name="group_activity_statement" />
+            <!-- For Odoo 17, we use a different approach to add settings -->
+            <xpath expr="//div[hasclass('settings')]" position="inside">
+                <div class="col-12 col-lg-6 o_setting_box" id="partner_statement_activity_setting">
+                    <div class="o_setting_left_pane">
+                        <field name="group_activity_statement"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="group_activity_statement">Enable Activity Statements</label>
                         <div class="text-muted">
                             Generate activity statements showing all partner transactions between two dates
                         </div>
                         <div class="content-group" invisible="[('group_activity_statement', '=', False)]">
+                            <div class="row mt16">
+                                <label for="default_aging_type" class="col-3 col-lg-3 o_light_label">Default Aging Method</label>
+                                <field name="default_aging_type" class="col-9"/>
+                            </div>
                             <div class="row">
-                                <label for="default_aging_type" class="col-3 col-lg-3 o_light_label"/>
-                                <field name="default_aging_type" />
+                                <div class="col-12">
+                                    <field name="default_show_aging_buckets" class="oe_inline"/>
+                                    <label for="default_show_aging_buckets" class="o_light_label">Show Aging Buckets by Default</label>
+                                </div>
                             </div>
-                            <div>
-                                <field name="default_show_aging_buckets" class="oe_inline"/>
-                                <label for="default_show_aging_buckets" class="o_light_label"/>
+                            <div class="row">
+                                <div class="col-12">
+                                    <field name="default_filter_partners_non_due" class="oe_inline"/>
+                                    <label for="default_filter_partners_non_due" class="o_light_label">Exclude Partners with No Due Entries by Default</label>
+                                </div>
                             </div>
-                            <div>
-                                <field name="default_filter_partners_non_due" class="oe_inline"/>
-                                <label for="default_filter_partners_non_due" class="o_light_label"/>
-                            </div>
-                            <div>
-                                <field name="default_filter_negative_balances" class="oe_inline"/>
-                                <label for="default_filter_negative_balances" class="o_light_label"/>
+                            <div class="row">
+                                <div class="col-12">
+                                    <field name="default_filter_negative_balances" class="oe_inline"/>
+                                    <label for="default_filter_negative_balances" class="o_light_label">Exclude Negative Balances by Default</label>
+                                </div>
                             </div>
                         </div>
-                    </setting>
-                    <setting id="partner_statement_outstanding" title="Enable Outstanding Statements">
-                        <field name="group_outstanding_statement" />
+                    </div>
+                </div>
+                <div class="col-12 col-lg-6 o_setting_box" id="partner_statement_outstanding_setting">
+                    <div class="o_setting_left_pane">
+                        <field name="group_outstanding_statement"/>
+                    </div>
+                    <div class="o_setting_right_pane">
+                        <label for="group_outstanding_statement">Enable Outstanding Statements</label>
                         <div class="text-muted">
                             Generate outstanding statements showing all open transactions up to a specific date
                         </div>
-                    </setting>
-                </block>
+                    </div>
+                </div>
             </xpath>
         </field>
     </record>
