@@ -41,6 +41,38 @@ class ActivityStatement(models.AbstractModel):
         _logger.info(f"Original Account Type: {account_type}")
         _logger.info(f"Mapped Account Type: {mapped_account_type}")
 
+        # First, let's check what account types actually exist for this partner
+        debug_query = """
+            SELECT DISTINCT acc.account_type, acc.code, acc.name, COUNT(*) as count
+            FROM account_move_line l
+            JOIN account_move m ON (l.move_id = m.id)
+            JOIN account_account acc ON (l.account_id = acc.id)
+            WHERE l.partner_id IN %s
+                AND m.state = 'posted'
+                AND l.date BETWEEN %s AND %s
+            GROUP BY acc.account_type, acc.code, acc.name
+            ORDER BY count DESC
+        """
+        self.env.cr.execute(debug_query, (partners, date_start, date_end))
+        debug_results = self.env.cr.fetchall()
+        _logger.info(f"Available account types for partner in date range: {debug_results}")
+
+        # Also check without date restriction
+        debug_query_all = """
+            SELECT DISTINCT acc.account_type, acc.code, acc.name, COUNT(*) as count
+            FROM account_move_line l
+            JOIN account_move m ON (l.move_id = m.id)
+            JOIN account_account acc ON (l.account_id = acc.id)
+            WHERE l.partner_id IN %s
+                AND m.state = 'posted'
+            GROUP BY acc.account_type, acc.code, acc.name
+            ORDER BY count DESC
+        """
+        self.env.cr.execute(debug_query_all, (partners,))
+        debug_results_all = self.env.cr.fetchall()
+        _logger.info(f"Available account types for partner (all dates): {debug_results_all}")
+
+        # Try the original query first
         query = """
             SELECT m.name AS move_id, l.partner_id, l.date,
                    COALESCE(l.name, '/') as name,
@@ -70,9 +102,77 @@ class ActivityStatement(models.AbstractModel):
         ))
         
         results = self.env.cr.dictfetchall()
-        _logger.info(f"Query found {len(results)} records")
+        _logger.info(f"Query with {mapped_account_type} found {len(results)} records")
         
+        # If no results with mapped account type, try all common account types
+        if not results:
+            common_types = ['asset_receivable', 'liability_payable', 'receivable', 'payable']
+            for test_type in common_types:
+                if test_type == mapped_account_type:
+                    continue  # Already tried this one
+                
+                _logger.info(f"Trying account type: {test_type}")
+                self.env.cr.execute(query, (
+                    partners, test_type, date_start, date_end, company_id
+                ))
+                
+                test_results = self.env.cr.dictfetchall()
+                if test_results:
+                    _logger.info(f"SUCCESS: Found {len(test_results)} records with account type {test_type}")
+                    results = test_results
+                    break
+                else:
+                    _logger.info(f"No results with account type {test_type}")
+
+        # If still no results, try a broader query without account type restriction
+        if not results:
+            _logger.info("Trying query without account type restriction...")
+            broad_query = """
+                SELECT m.name AS move_id, l.partner_id, l.date,
+                       COALESCE(l.name, '/') as name,
+                       COALESCE(l.ref, '') as ref,
+                       COALESCE(l.blocked, false) as blocked, 
+                       l.currency_id, 
+                       l.company_id,
+                       l.debit,
+                       l.credit,
+                       l.debit - l.credit as amount,
+                       COALESCE(l.date_maturity, l.date) as date_maturity,
+                       COALESCE(l.currency_id, c.currency_id) AS currency_id,
+                       acc.account_type
+                FROM account_move_line l
+                JOIN account_move m ON (l.move_id = m.id)
+                JOIN account_account acc ON (l.account_id = acc.id)
+                JOIN res_company c ON (c.id = l.company_id)
+                WHERE l.partner_id IN %s
+                    AND l.date BETWEEN %s AND %s
+                    AND m.state = 'posted'
+                    AND c.id = %s
+                    AND acc.account_type IN ('asset_receivable', 'liability_payable', 'receivable', 'payable')
+                ORDER BY l.date, l.id
+                LIMIT 10
+            """
+            
+            self.env.cr.execute(broad_query, (
+                partners, date_start, date_end, company_id
+            ))
+            
+            broad_results = self.env.cr.dictfetchall()
+            _logger.info(f"Broad query found {len(broad_results)} records")
+            if broad_results:
+                _logger.info(f"Sample records: {broad_results[:3]}")
+                # Filter results to match the requested account type logic
+                if account_type == 'receivable':
+                    results = [r for r in broad_results if r['account_type'] in ['asset_receivable', 'receivable']]
+                elif account_type == 'payable':
+                    results = [r for r in broad_results if r['account_type'] in ['liability_payable', 'payable']]
+                else:
+                    results = broad_results
+
         for row in results:
+            # Remove the debug field if it exists
+            if 'account_type' in row:
+                del row['account_type']
             res[row.pop("partner_id")].append(row)
             
         _logger.info(f"Final result: {len([item for sublist in res.values() for item in sublist])} total lines")
@@ -86,6 +186,8 @@ class ActivityStatement(models.AbstractModel):
         res = defaultdict(list)
         partners = tuple(partner_ids)
         mapped_account_type = self._get_account_type_mapping(account_type)
+        
+        _logger.info(f"Getting initial balance for account type: {mapped_account_type}")
         
         query = """
             SELECT l.partner_id,
@@ -107,7 +209,27 @@ class ActivityStatement(models.AbstractModel):
             partners, mapped_account_type, date_start, company_id
         ))
         
-        for row in self.env.cr.dictfetchall():
+        balance_results = self.env.cr.dictfetchall()
+        _logger.info(f"Initial balance query found {len(balance_results)} records")
+        
+        # If no results with mapped type, try other types
+        if not balance_results:
+            common_types = ['asset_receivable', 'liability_payable', 'receivable', 'payable']
+            for test_type in common_types:
+                if test_type == mapped_account_type:
+                    continue
+                
+                self.env.cr.execute(query, (
+                    partners, test_type, date_start, company_id
+                ))
+                
+                test_balance_results = self.env.cr.dictfetchall()
+                if test_balance_results:
+                    _logger.info(f"Found initial balance with account type {test_type}: {len(test_balance_results)} records")
+                    balance_results = test_balance_results
+                    break
+        
+        for row in balance_results:
             res[row['partner_id']].append(row)
         
         return res
