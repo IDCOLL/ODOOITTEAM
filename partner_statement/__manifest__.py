@@ -3,7 +3,7 @@
 
 {
     "name": "Partner Statement SA",
-    "version": "17.0",
+    "version": "17.0.1.0.0",
     "category": "Accounting & Finance",
     "summary": "Customer Statements South Africa",
     "author": "THE IT TEAM",
@@ -20,11 +20,12 @@
         "views/res_config_settings.xml",
         "wizard/statement_wizard.xml",
     ],
-    'assets': {
-        'web.assets_frontend': [
-            '/partner_statement/static/src/scss/layout_statement.scss',
+    "assets": {
+        "web.assets_backend": [
+            "partner_statement/static/src/scss/layout_statement.scss",
         ]
     },
     "installable": True,
     "application": False,
+    "auto_install": False,
 }

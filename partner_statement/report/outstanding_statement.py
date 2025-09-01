@@ -11,13 +11,22 @@ class OutstandingStatement(models.AbstractModel):
     _name = "report.partner_statement.outstanding_statement"
     _description = "Partner Outstanding Statement"
 
+    def _get_account_type_mapping(self, account_type):
+        """Map old account types to new Odoo 17 account types"""
+        mapping = {
+            'receivable': 'asset_receivable',
+            'payable': 'liability_payable'
+        }
+        return mapping.get(account_type, account_type)
+
     def _display_lines_sql_q1(self, partners, date_end, account_type):
         partners = tuple(partners)
+        mapped_account_type = self._get_account_type_mapping(account_type)
         return str(
             self._cr.mogrify(
                 """
             SELECT m.name AS move_id, l.partner_id, l.date, l.name,
-                            l.ref, l.blocked, l.currency_id, l.company_id,
+                l.ref, COALESCE(l.blocked, false) as blocked, l.currency_id, l.company_id,
             CASE WHEN (l.currency_id is not null AND l.amount_currency > 0.0)
                 THEN avg(l.amount_currency)
                 ELSE avg(l.debit)
@@ -40,6 +49,7 @@ class OutstandingStatement(models.AbstractModel):
             END as date_maturity
             FROM account_move_line l
             JOIN account_move m ON (l.move_id = m.id)
+            JOIN account_account acc ON (l.account_id = acc.id)
             LEFT JOIN (SELECT pr.*
                 FROM account_partial_reconcile pr
                 INNER JOIN account_move_line l2
@@ -53,17 +63,17 @@ class OutstandingStatement(models.AbstractModel):
                 WHERE l2.date <= %(date_end)s
             ) as pc ON pc.credit_move_id = l.id
             WHERE l.partner_id IN %(partners)s
-                                AND l.account_internal_type = %(account_type)s
-                                AND (
-                                  (pd.id IS NOT NULL AND
-                                      pd.max_date <= %(date_end)s) OR
-                                  (pc.id IS NOT NULL AND
-                                      pc.max_date <= %(date_end)s) OR
-                                  (pd.id IS NULL AND pc.id IS NULL)
-                                ) AND l.date <= %(date_end)s AND m.state IN ('posted')
+                AND acc.account_type = %(mapped_account_type)s
+                AND (
+                  (pd.id IS NOT NULL AND
+                      pd.max_date <= %(date_end)s) OR
+                  (pc.id IS NOT NULL AND
+                      pc.max_date <= %(date_end)s) OR
+                  (pd.id IS NULL AND pc.id IS NULL)
+                ) AND l.date <= %(date_end)s AND m.state = 'posted'
             GROUP BY l.partner_id, m.name, l.date, l.date_maturity, l.name,
-                                l.ref, l.blocked, l.currency_id,
-                                l.balance, l.amount_currency, l.company_id
+                l.ref, COALESCE(l.blocked, false), l.currency_id,
+                l.balance, l.amount_currency, l.company_id
             """,
                 locals(),
             ),

@@ -2,8 +2,11 @@
 # License AGPL-3.0 or later (https://www.gnu.org/licenses/agpl.html).
 
 from dateutil.relativedelta import relativedelta
+import logging
 
 from odoo import api, fields, models
+
+_logger = logging.getLogger(__name__)
 
 
 class ActivityStatementWizard(models.TransientModel):
@@ -32,6 +35,7 @@ class ActivityStatementWizard(models.TransientModel):
     def _export(self):
         """Export to PDF."""
         data = self._prepare_statement()
+        _logger.info(f"Activity Statement Export - Data: {data}")
         return self.env.ref(
             "partner_statement.action_print_activity_statements"
         ).report_action(self.ids, data=data)
@@ -39,4 +43,21 @@ class ActivityStatementWizard(models.TransientModel):
     def _prepare_statement(self):
         res = super()._prepare_statement()
         res.update({"date_start": self.date_start})
+        
+        _logger.info(f"Activity Statement Wizard - Prepared data: {res}")
+        
+        # Debug: Check if partner has any move lines at all (Fixed query with table aliases)
+        partner_ids = self._context.get('active_ids', [])
+        if partner_ids:
+            self.env.cr.execute("""
+                SELECT COUNT(*) as count, MIN(l.date) as min_date, MAX(l.date) as max_date
+                FROM account_move_line l 
+                JOIN account_move m ON l.move_id = m.id
+                WHERE l.partner_id IN %s AND m.state = 'posted'
+            """, (tuple(partner_ids),))
+            
+            result = self.env.cr.fetchone()
+            _logger.info(f"Partner {partner_ids} has {result[0]} posted move lines "
+                        f"between {result[1]} and {result[2]}")
+        
         return res

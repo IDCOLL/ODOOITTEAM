@@ -13,6 +13,14 @@ class ReportStatementCommon(models.AbstractModel):
     _name = "statement.common"
     _description = "Statement Reports Common"
 
+    def _get_account_type_mapping(self, account_type):
+        """Map old account types to new Odoo 17 account types"""
+        mapping = {
+            'receivable': 'asset_receivable',
+            'payable': 'liability_payable'
+        }
+        return mapping.get(account_type, account_type)
+
     def _get_invoice_address(self, part):
         inv_addr_id = part.address_get(["invoice"]).get("invoice", part.id)
         return self.env["res.partner"].browse(inv_addr_id)
@@ -35,6 +43,7 @@ class ReportStatementCommon(models.AbstractModel):
         return {}
 
     def _show_buckets_sql_q1(self, partners, date_end, account_type):
+        mapped_account_type = self._get_account_type_mapping(account_type)
         return str(
             self._cr.mogrify(
                 """
@@ -53,6 +62,7 @@ class ReportStatementCommon(models.AbstractModel):
             END as date_maturity
             FROM account_move_line l
             JOIN account_move m ON (l.move_id = m.id)
+            JOIN account_account acc ON (l.account_id = acc.id)
             LEFT JOIN (SELECT pr.*
                 FROM account_partial_reconcile pr
                 INNER JOIN account_move_line l2
@@ -66,18 +76,19 @@ class ReportStatementCommon(models.AbstractModel):
                 WHERE l2.date <= %(date_end)s
             ) as pc ON pc.credit_move_id = l.id
             WHERE l.partner_id IN %(partners)s
-                                AND l.account_internal_type = %(account_type)s
-                                AND (
-                                  (pd.id IS NOT NULL AND
-                                      pd.max_date <= %(date_end)s) OR
-                                  (pc.id IS NOT NULL AND
-                                      pc.max_date <= %(date_end)s) OR
-                                  (pd.id IS NULL AND pc.id IS NULL)
-                                ) AND l.date <= %(date_end)s AND not l.blocked
-                                  AND m.state IN ('posted')
+                AND acc.account_type = %(mapped_account_type)s
+                AND (
+                  (pd.id IS NOT NULL AND
+                      pd.max_date <= %(date_end)s) OR
+                  (pc.id IS NOT NULL AND
+                      pc.max_date <= %(date_end)s) OR
+                  (pd.id IS NULL AND pc.id IS NULL)
+                ) AND l.date <= %(date_end)s 
+                AND NOT COALESCE(l.blocked, false)
+                AND m.state = 'posted'
             GROUP BY l.partner_id, l.currency_id, l.date, l.date_maturity,
-                                l.amount_currency, l.balance, l.move_id,
-                                l.company_id, l.id
+                l.amount_currency, l.balance, l.move_id,
+                l.company_id, l.id
         """,
                 locals(),
             ),
@@ -249,7 +260,7 @@ class ReportStatementCommon(models.AbstractModel):
 
     def _get_bucket_labels(self, date_end, aging_type):
         return getattr(
-            self, "_get_bucket_labels_%s" % aging_type, self._get_bucket_dates_days
+            self, "_get_bucket_labels_%s" % aging_type, self._get_bucket_labels_days
         )(date_end)
 
     def _get_bucket_labels_days(self, date_end):
@@ -262,15 +273,6 @@ class ReportStatementCommon(models.AbstractModel):
             _("121 Days +"),
             _("Total"),
         ]
-        # return [
-        #     # _("Not Due"),
-        #     _("Current"),
-        #     _("30 DAYS"),
-        #     _("60 DAYS"),
-        #     _("90 DAYS"),
-        #     _("120 Days +"),
-        #     _("Total"),
-        # ]
 
     def _get_bucket_labels_months(self, date_end):
         return [
