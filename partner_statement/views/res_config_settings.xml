@@ -21,7 +21,7 @@
                                 <div class="text-muted">
                                     Generate activity statements showing all partner transactions between two dates
                                 </div>
-                                <div class="content-group" attrs="{'invisible': [('group_activity_statement','=',False)]}">
+                                <div class="content-group" modifiers="{'invisible': [['group_activity_statement', '=', False]]}">
                                     <div class="row mt16">
                                         <label for="default_aging_type" class="col-3 o_light_label">Default Aging Method</label>
                                         <field name="default_aging_type" class="col-9"/>
