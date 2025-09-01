@@ -17,7 +17,7 @@ class OutstandingStatement(models.AbstractModel):
             self._cr.mogrify(
                 """
             SELECT m.name AS move_id, l.partner_id, l.date, l.name,
-                            l.ref, l.blocked, l.currency_id, l.company_id,
+                l.ref, COALESCE(l.blocked, false) as blocked, l.currency_id, l.company_id,
             CASE WHEN (l.currency_id is not null AND l.amount_currency > 0.0)
                 THEN avg(l.amount_currency)
                 ELSE avg(l.debit)
@@ -40,6 +40,7 @@ class OutstandingStatement(models.AbstractModel):
             END as date_maturity
             FROM account_move_line l
             JOIN account_move m ON (l.move_id = m.id)
+            JOIN account_account acc ON (l.account_id = acc.id)
             LEFT JOIN (SELECT pr.*
                 FROM account_partial_reconcile pr
                 INNER JOIN account_move_line l2
@@ -53,17 +54,17 @@ class OutstandingStatement(models.AbstractModel):
                 WHERE l2.date <= %(date_end)s
             ) as pc ON pc.credit_move_id = l.id
             WHERE l.partner_id IN %(partners)s
-                                AND l.account_id IN (SELECT id FROM account_account WHERE account_type = %(account_type)s)
-                                AND (
-                                  (pd.id IS NOT NULL AND
-                                      pd.max_date <= %(date_end)s) OR
-                                  (pc.id IS NOT NULL AND
-                                      pc.max_date <= %(date_end)s) OR
-                                  (pd.id IS NULL AND pc.id IS NULL)
-                                ) AND l.date <= %(date_end)s AND m.state IN ('posted')
+                AND acc.account_type = %(account_type)s
+                AND (
+                  (pd.id IS NOT NULL AND
+                      pd.max_date <= %(date_end)s) OR
+                  (pc.id IS NOT NULL AND
+                      pc.max_date <= %(date_end)s) OR
+                  (pd.id IS NULL AND pc.id IS NULL)
+                ) AND l.date <= %(date_end)s AND m.state = 'posted'
             GROUP BY l.partner_id, m.name, l.date, l.date_maturity, l.name,
-                                l.ref, l.blocked, l.currency_id,
-                                l.balance, l.amount_currency, l.company_id
+                l.ref, COALESCE(l.blocked, false), l.currency_id,
+                l.balance, l.amount_currency, l.company_id
             """,
                 locals(),
             ),

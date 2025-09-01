@@ -28,12 +28,13 @@ class ActivityStatement(models.AbstractModel):
             END as credit
             FROM account_move_line l
             JOIN account_move m ON (l.move_id = m.id)
+            JOIN account_account acc ON (l.account_id = acc.id)
             WHERE l.partner_id IN %(partners)s
-                                AND l.account_id IN (SELECT id FROM account_account WHERE account_type = %(account_type)s)
-                                AND l.date < %(date_start)s AND not l.blocked
-                                AND m.state IN ('posted')
-            GROUP BY l.partner_id, l.currency_id, l.amount_currency,
-                                l.company_id
+                AND acc.account_type = %(account_type)s
+                AND l.date < %(date_start)s 
+                AND NOT COALESCE(l.blocked, false)
+                AND m.state = 'posted'
+            GROUP BY l.partner_id, l.currency_id, l.amount_currency, l.company_id
         """,
                 locals(),
             ),
@@ -79,17 +80,19 @@ class ActivityStatement(models.AbstractModel):
             self._cr.mogrify(
                 """
             SELECT m.name AS move_id, l.partner_id, l.date,
-       CASE WHEN (aj.type IN ('sale', 'purchase'))
+            CASE WHEN (aj.type IN ('sale', 'purchase'))
                 THEN l.name
                 ELSE '/'
             END as name,
-       CASE WHEN (aj.type IN ('sale', 'purchase'))
+            CASE WHEN (aj.type IN ('sale', 'purchase'))
                 THEN l.ref
-           WHEN (aj.type in ('bank', 'cash'))
+            WHEN (aj.type in ('bank', 'cash'))
                 THEN 'Payment'
-                ELSE ''
+                ELSE COALESCE(l.ref, '')
             END as ref,
-            l.blocked, l.currency_id, l.company_id,
+            COALESCE(l.blocked, false) as blocked, 
+            l.currency_id, 
+            l.company_id,
             CASE WHEN (l.currency_id is not null AND l.amount_currency > 0.0)
                 THEN sum(l.amount_currency)
                 ELSE sum(l.debit)
@@ -105,11 +108,12 @@ class ActivityStatement(models.AbstractModel):
             FROM account_move_line l
             JOIN account_move m ON (l.move_id = m.id)
             JOIN account_journal aj ON (l.journal_id = aj.id)
+            JOIN account_account acc ON (l.account_id = acc.id)
             WHERE l.partner_id IN %(partners)s
-                AND l.account_id IN (SELECT id FROM account_account WHERE account_type = %(account_type)s)
+                AND acc.account_type = %(account_type)s
                 AND %(date_start)s <= l.date
                 AND l.date <= %(date_end)s
-                AND m.state IN ('posted')
+                AND m.state = 'posted'
             GROUP BY l.partner_id, m.name, l.date, l.date_maturity,
                 CASE WHEN (aj.type IN ('sale', 'purchase'))
                     THEN l.name
@@ -119,9 +123,9 @@ class ActivityStatement(models.AbstractModel):
                     THEN l.ref
                 WHEN (aj.type in ('bank', 'cash'))
                     THEN 'Payment'
-                    ELSE ''
+                    ELSE COALESCE(l.ref, '')
                 END,
-                l.blocked, l.currency_id, l.amount_currency, l.company_id
+                COALESCE(l.blocked, false), l.currency_id, l.amount_currency, l.company_id
         """,
                 locals(),
             ),

@@ -5,36 +5,44 @@ class ResConfigSettings(models.TransientModel):
     _inherit = "res.config.settings"
 
     group_activity_statement = fields.Boolean(
-        "Enable OCA Activity Statements",
-        group="account.group_account_invoice",
+        "Enable Activity Statements",
+        group="account.group_account_manager",
         implied_group="partner_statement.group_activity_statement",
+        help="Activity Statements show all transactions between two dates."
     )
 
     default_aging_type = fields.Selection(
         [("days", "Age by Days"), ("months", "Age by Months")],
-        string="Aging Method",
+        string="Default Aging Method",
         required=True,
         default="days",
         default_model="statement.common.wizard",
+        help="Default method for aging calculations"
     )
 
     default_show_aging_buckets = fields.Boolean(
-        string="Show Aging Buckets", default_model="statement.common.wizard"
+        string="Show Aging Buckets by Default", 
+        default_model="statement.common.wizard",
+        help="Show aging buckets in statements by default"
     )
 
     default_filter_partners_non_due = fields.Boolean(
-        string="Exclude partners with no due entries",
+        string="Exclude Partners with No Due Entries by Default",
         default_model="statement.common.wizard",
+        help="Filter out partners with no due entries by default"
     )
 
     default_filter_negative_balances = fields.Boolean(
-        "Exclude Negative Balances", default_model="statement.common.wizard"
+        "Exclude Negative Balances by Default", 
+        default_model="statement.common.wizard",
+        help="Filter out partners with negative balances by default"
     )
 
     group_outstanding_statement = fields.Boolean(
-        "Enable OCA Outstanding Statements",
-        group="account.group_account_invoice",
+        "Enable Outstanding Statements",
+        group="account.group_account_manager",
         implied_group="partner_statement.group_outstanding_statement",
+        help="Outstanding Statements show all transactions up to a date."
     )
 
     def set_values(self):
@@ -44,6 +52,7 @@ class ResConfigSettings(models.TransientModel):
         for name, field in self._fields.items():
             if (
                 name.startswith("default_")
+                and hasattr(field, 'default_model')
                 and field.default_model == "statement.common.wizard"
             ):
                 if isinstance(self[name], models.BaseModel):

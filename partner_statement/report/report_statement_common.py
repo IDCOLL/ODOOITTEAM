@@ -53,6 +53,7 @@ class ReportStatementCommon(models.AbstractModel):
             END as date_maturity
             FROM account_move_line l
             JOIN account_move m ON (l.move_id = m.id)
+            JOIN account_account acc ON (l.account_id = acc.id)
             LEFT JOIN (SELECT pr.*
                 FROM account_partial_reconcile pr
                 INNER JOIN account_move_line l2
@@ -66,18 +67,19 @@ class ReportStatementCommon(models.AbstractModel):
                 WHERE l2.date <= %(date_end)s
             ) as pc ON pc.credit_move_id = l.id
             WHERE l.partner_id IN %(partners)s
-                                AND l.account_id IN (SELECT id FROM account_account WHERE account_type = %(account_type)s)
-                                AND (
-                                  (pd.id IS NOT NULL AND
-                                      pd.max_date <= %(date_end)s) OR
-                                  (pc.id IS NOT NULL AND
-                                      pc.max_date <= %(date_end)s) OR
-                                  (pd.id IS NULL AND pc.id IS NULL)
-                                ) AND l.date <= %(date_end)s AND not l.blocked
-                                  AND m.state IN ('posted')
+                AND acc.account_type = %(account_type)s
+                AND (
+                  (pd.id IS NOT NULL AND
+                      pd.max_date <= %(date_end)s) OR
+                  (pc.id IS NOT NULL AND
+                      pc.max_date <= %(date_end)s) OR
+                  (pd.id IS NULL AND pc.id IS NULL)
+                ) AND l.date <= %(date_end)s 
+                AND NOT COALESCE(l.blocked, false)
+                AND m.state = 'posted'
             GROUP BY l.partner_id, l.currency_id, l.date, l.date_maturity,
-                                l.amount_currency, l.balance, l.move_id,
-                                l.company_id, l.id
+                l.amount_currency, l.balance, l.move_id,
+                l.company_id, l.id
         """,
                 locals(),
             ),
@@ -249,7 +251,7 @@ class ReportStatementCommon(models.AbstractModel):
 
     def _get_bucket_labels(self, date_end, aging_type):
         return getattr(
-            self, "_get_bucket_labels_%s" % aging_type, self._get_bucket_dates_days
+            self, "_get_bucket_labels_%s" % aging_type, self._get_bucket_labels_days
         )(date_end)
 
     def _get_bucket_labels_days(self, date_end):
@@ -262,15 +264,6 @@ class ReportStatementCommon(models.AbstractModel):
             _("121 Days +"),
             _("Total"),
         ]
-        # return [
-        #     # _("Not Due"),
-        #     _("Current"),
-        #     _("30 DAYS"),
-        #     _("60 DAYS"),
-        #     _("90 DAYS"),
-        #     _("120 Days +"),
-        #     _("Total"),
-        # ]
 
     def _get_bucket_labels_months(self, date_end):
         return [
