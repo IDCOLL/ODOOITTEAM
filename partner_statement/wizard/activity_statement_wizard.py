@@ -46,11 +46,11 @@ class ActivityStatementWizard(models.TransientModel):
         
         _logger.info(f"Activity Statement Wizard - Prepared data: {res}")
         
-        # Debug: Check if partner has any move lines at all
+        # Debug: Check if partner has any move lines at all (Fixed query with table aliases)
         partner_ids = self._context.get('active_ids', [])
         if partner_ids:
             self.env.cr.execute("""
-                SELECT COUNT(*) as count, MIN(date) as min_date, MAX(date) as max_date
+                SELECT COUNT(*) as count, MIN(l.date) as min_date, MAX(l.date) as max_date
                 FROM account_move_line l 
                 JOIN account_move m ON l.move_id = m.id
                 WHERE l.partner_id IN %s AND m.state = 'posted'
