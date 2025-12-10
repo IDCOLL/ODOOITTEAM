@@ -4,8 +4,12 @@ from odoo.addons.base.models.res_config import ResConfigSettings as BaseResConfi
 original_get_classified_fields = BaseResConfigSettings._get_classified_fields
 
 
-def _get_classified_fields_fixed(self, fnames):
+def _get_classified_fields_fixed(self, fnames=None):
     """Patch to skip fields that would raise due to missing default_model."""
+    
+    # If no fnames provided, get all fields (original behavior)
+    if fnames is None:
+        fnames = list(self._fields.keys())
     
     # Filter out problematic default_ fields before calling original
     safe_fnames = []
