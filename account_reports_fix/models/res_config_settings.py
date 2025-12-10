@@ -5,39 +5,25 @@ original_get_classified_fields = BaseResConfigSettings._get_classified_fields
 
 
 def _get_classified_fields_fixed(self, fnames):
-    """Patch to handle fields with missing default_model attribute."""
-    result = {
-        'default': [],
-        'group': [],
-        'module': [],
-        'config': [],
-        'other': [],
-    }
+    """Patch to skip fields that would raise due to missing default_model."""
+    
+    # Filter out problematic default_ fields before calling original
+    safe_fnames = []
+    skipped = []
     
     for fname in fnames:
-        field = self._fields.get(fname)
-        if not field:
-            continue
-            
         if fname.startswith('default_'):
-            if hasattr(field, 'default_model') and field.default_model:
-                # Returns tuple of (field_name, model_name, target_field_name)
-                target_field = fname[8:]  # Remove 'default_' prefix
-                result['default'].append((fname, field.default_model, target_field))
-            else:
-                # Skip fields without default_model instead of raising
-                result['other'].append(fname)
-        elif fname.startswith('group_'):
-            if hasattr(field, 'implied_group') and field.implied_group:
-                result['group'].append((fname, field.implied_group))
-            else:
-                result['other'].append(fname)
-        elif fname.startswith('module_'):
-            result['module'].append((fname, fname[7:]))  # Remove 'module_' prefix
-        elif fname.startswith('config_'):
-            result['config'].append((fname,))
-        else:
-            result['other'].append(fname)
+            field = self._fields.get(fname)
+            if field and (not hasattr(field, 'default_model') or not field.default_model):
+                skipped.append(fname)
+                continue
+        safe_fnames.append(fname)
+    
+    # Call original with safe fields
+    result = original_get_classified_fields(self, safe_fnames)
+    
+    # Add skipped fields to 'other'
+    result['other'].extend(skipped)
     
     return result
 
