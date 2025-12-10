@@ -21,16 +21,21 @@ def _get_classified_fields_fixed(self, fnames):
             
         if fname.startswith('default_'):
             if hasattr(field, 'default_model') and field.default_model:
-                result['default'].append(fname)
+                # Returns tuple of (field_name, model_name, target_field_name)
+                target_field = fname[8:]  # Remove 'default_' prefix
+                result['default'].append((fname, field.default_model, target_field))
             else:
                 # Skip fields without default_model instead of raising
                 result['other'].append(fname)
         elif fname.startswith('group_'):
-            result['group'].append(fname)
+            if hasattr(field, 'implied_group') and field.implied_group:
+                result['group'].append((fname, field.implied_group))
+            else:
+                result['other'].append(fname)
         elif fname.startswith('module_'):
-            result['module'].append(fname)
+            result['module'].append((fname, fname[7:]))  # Remove 'module_' prefix
         elif fname.startswith('config_'):
-            result['config'].append(fname)
+            result['config'].append((fname,))
         else:
             result['other'].append(fname)
     
