@@ -7,3 +7,15 @@ class ResConfigSettings(models.TransientModel):
         selection_add=[],
         default_model='account.aged.partner.balance.report.handler',
     )
+    
+    default_show_aging_buckets = fields.Boolean(
+        default_model='account.aged.partner.balance.report.handler',
+    )
+    
+    default_aging_bucket_count = fields.Integer(
+        default_model='account.aged.partner.balance.report.handler',
+    )
+    
+    default_aging_bucket_duration = fields.Integer(
+        default_model='account.aged.partner.balance.report.handler',
+    )
