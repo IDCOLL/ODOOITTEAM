@@ -1,0 +1,5 @@
+# Python dependencies for Claude AI Helpdesk Automation module
+# These will be automatically installed on Odoo.sh
+
+anthropic>=0.18.0
+requests>=2.31.0

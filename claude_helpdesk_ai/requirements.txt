@@ -1,0 +1,11 @@
+# Python dependencies for Claude AI Helpdesk Automation module
+#
+# FOR ODOO.SH DEPLOYMENTS:
+# Copy this file to your repository root as requirements.txt
+# Odoo.sh will automatically install these dependencies during build
+#
+# FOR SELF-HOSTED DEPLOYMENTS:
+# Install manually using: pip install -r requirements.txt
+
+anthropic>=0.18.0
+requests>=2.31.0

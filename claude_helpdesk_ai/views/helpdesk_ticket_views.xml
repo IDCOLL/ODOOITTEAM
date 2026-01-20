@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Extend Helpdesk Ticket Form View -->
+        <record id="view_helpdesk_ticket_form_claude_ai" model="ir.ui.view">
+            <field name="name">helpdesk.ticket.form.claude.ai</field>
+            <field name="model">helpdesk.ticket</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_ticket_view_form"/>
+            <field name="arch" type="xml">
+                <!-- Add buttons in header -->
+                <header position="inside">
+                    <button name="action_analyze_with_claude"
+                            string="Analyze with Claude AI"
+                            type="object"
+                            class="btn-primary"
+                            attrs="{'invisible': [('x_ai_analyzed', '=', True)]}"/>
+                    <button name="action_open_github_pr"
+                            string="Open Pull Request"
+                            type="object"
+                            class="btn-info"
+                            attrs="{'invisible': [('x_github_pr_url', '=', False)]}"/>
+                </header>
+
+                <!-- Add notebook pages -->
+                <xpath expr="//notebook" position="inside">
+                    <!-- AI Analysis & Code page -->
+                    <page string="AI Analysis &amp; Code" name="ai_analysis" attrs="{'invisible': [('x_ai_analyzed', '=', False)]}">
+                        <group>
+                            <group string="Analysis Information">
+                                <field name="x_analysis_date"/>
+                                <field name="x_estimated_hours"/>
+                                <field name="x_affected_module"/>
+                            </group>
+                            <group string="GitHub Information">
+                                <field name="x_github_branch"/>
+                                <field name="x_github_pr_number"/>
+                                <field name="x_github_pr_url" widget="url"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="x_claude_analysis" nolabel="1"/>
+                        </group>
+                        <group string="Proposed Code Changes">
+                            <field name="x_proposed_changes" widget="ace" options="{'mode': 'json'}" nolabel="1"/>
+                        </group>
+                        <group string="Full API Response (Debug)">
+                            <field name="x_claude_analysis_json" widget="ace" options="{'mode': 'json'}" nolabel="1"/>
+                        </group>
+                    </page>
+
+                    <!-- Technical Details page -->
+                    <page string="Technical Details" name="technical_details">
+                        <group>
+                            <field name="x_affected_module" placeholder="e.g., sale, purchase, custom_module"/>
+                            <field name="x_error_logs" placeholder="Paste error logs or stack traces here..." nolabel="1"/>
+                            <field name="x_steps_to_reproduce" placeholder="1. Go to...&#10;2. Click on...&#10;3. See error..." nolabel="1"/>
+                        </group>
+                    </page>
+                </xpath>
+            </field>
+        </record>
+
+        <!-- Extend Helpdesk Ticket Tree View -->
+        <record id="view_helpdesk_ticket_tree_claude_ai" model="ir.ui.view">
+            <field name="name">helpdesk.ticket.tree.claude.ai</field>
+            <field name="model">helpdesk.ticket</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree"/>
+            <field name="arch" type="xml">
+                <tree position="inside">
+                    <field name="x_ai_analyzed" widget="boolean_toggle" optional="show"/>
+                    <field name="x_pr_created" widget="boolean_toggle" optional="show"/>
+                </tree>
+            </field>
+        </record>
+
+        <!-- Extend Helpdesk Ticket Search View -->
+        <record id="view_helpdesk_ticket_search_claude_ai" model="ir.ui.view">
+            <field name="name">helpdesk.ticket.search.claude.ai</field>
+            <field name="model">helpdesk.ticket</field>
+            <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_search"/>
+            <field name="arch" type="xml">
+                <search position="inside">
+                    <filter string="AI Analyzed" name="filter_ai_analyzed"
+                            domain="[('x_ai_analyzed', '=', True)]"/>
+                    <filter string="PR Created" name="filter_pr_created"
+                            domain="[('x_pr_created', '=', True)]"/>
+                    <filter string="Not Analyzed" name="filter_not_analyzed"
+                            domain="[('x_ai_analyzed', '=', False)]"/>
+                </search>
+            </field>
+        </record>
+    </data>
+</odoo>

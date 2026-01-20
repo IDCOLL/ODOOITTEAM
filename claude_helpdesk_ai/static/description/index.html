@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude AI Helpdesk Automation</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5em;
+        }
+        .tagline {
+            font-size: 1.2em;
+            margin-top: 10px;
+            opacity: 0.9;
+        }
+        .section {
+            background: white;
+            padding: 25px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h2 {
+            color: #667eea;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+        .feature {
+            padding: 15px;
+            background: #f8f9fa;
+            border-left: 4px solid #667eea;
+            border-radius: 5px;
+        }
+        .feature h3 {
+            margin-top: 0;
+            color: #764ba2;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 5px 10px;
+            background: #667eea;
+            color: white;
+            border-radius: 15px;
+            font-size: 0.9em;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        .warning {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 15px 0;
+        }
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            margin-top: 30px;
+        }
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>🤖 Claude AI Helpdesk Automation</h1>
+        <div class="tagline">Intelligent ticket analysis and automated code fixes</div>
+    </div>
+
+    <div class="section">
+        <h2>Overview</h2>
+        <p>
+            Transform your helpdesk operations with AI-powered ticket analysis. This module integrates
+            Anthropic's Claude AI with Odoo Helpdesk to automatically analyze support tickets, propose
+            code solutions, and create GitHub pull requests with fixes.
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Key Features</h2>
+        <div class="features">
+            <div class="feature">
+                <h3>🧠 Intelligent Analysis</h3>
+                <p>Claude Sonnet 4.5 analyzes tickets to identify root causes and propose solutions based on your codebase.</p>
+            </div>
+            <div class="feature">
+                <h3>⚡ Auto-Detection</h3>
+                <p>Automatically detects affected Odoo modules from ticket descriptions and error logs.</p>
+            </div>
+            <div class="feature">
+                <h3>🔗 GitHub Integration</h3>
+                <p>Creates branches and pull requests directly from ticket analysis with complete code changes.</p>
+            </div>
+            <div class="feature">
+                <h3>💰 Cost Optimization</h3>
+                <p>Leverages prompt caching to reduce API costs by up to 90% for repeated context.</p>
+            </div>
+            <div class="feature">
+                <h3>👥 Multi-Client Support</h3>
+                <p>Configure different GitHub repositories and environments for each client.</p>
+            </div>
+            <div class="feature">
+                <h3>📊 Analytics & Tracking</h3>
+                <p>Track analysis history, PR creation, and success rates per client.</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Requirements</h2>
+        <div>
+            <span class="badge">Odoo 14+</span>
+            <span class="badge">Python 3.7+</span>
+            <span class="badge">Helpdesk Module</span>
+        </div>
+        <h3>External Dependencies</h3>
+        <ul>
+            <li><strong>Python Packages:</strong> <code>anthropic</code>, <code>requests</code></li>
+            <li><strong>Claude API:</strong> Anthropic API key with Claude Sonnet 4.5 access</li>
+            <li><strong>GitHub:</strong> Personal Access Token with repo permissions</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Installation</h2>
+        <ol>
+            <li>Install Python dependencies:
+                <br><code>pip install anthropic requests</code>
+            </li>
+            <li>Copy this module to your Odoo addons directory</li>
+            <li>Update the apps list in Odoo</li>
+            <li>Install "Claude AI Helpdesk Automation"</li>
+            <li>Configure Claude API key in Settings → Technical → System Parameters:
+                <br>Key: <code>claude_helpdesk_ai.api_key</code>
+            </li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>Configuration</h2>
+        <h3>Per-Client Setup</h3>
+        <ol>
+            <li>Go to Helpdesk → Configuration → Claude AI Configuration</li>
+            <li>Select a customer/partner</li>
+            <li>Open the "Claude AI & GitHub" tab</li>
+            <li>Configure:
+                <ul>
+                    <li>GitHub repository URL</li>
+                    <li>GitHub Personal Access Token</li>
+                    <li>Default branch and addons path</li>
+                    <li>Odoo version and custom modules</li>
+                    <li>Auto-analysis preferences</li>
+                </ul>
+            </li>
+            <li>Test the connection using "Test Connection" button</li>
+        </ol>
+    </div>
+
+    <div class="section">
+        <h2>Usage</h2>
+        <h3>Manual Analysis</h3>
+        <ol>
+            <li>Open a helpdesk ticket</li>
+            <li>Fill in "Technical Details" tab (error logs, steps to reproduce)</li>
+            <li>Click "Analyze with Claude AI" button</li>
+            <li>View results in "AI Analysis & Code" tab</li>
+            <li>Optionally open created pull request</li>
+        </ol>
+
+        <h3>Automatic Analysis</h3>
+        <p>Enable "Enable Auto-Analysis" on the customer to automatically analyze tickets on creation.</p>
+
+        <div class="warning">
+            <strong>⚠️ Important:</strong> Auto-create PR is disabled by default. Enable with caution as it
+            creates pull requests automatically without review.
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Cost Optimization</h2>
+        <p>
+            This module uses <strong>prompt caching</strong> to significantly reduce API costs:
+        </p>
+        <ul>
+            <li>Universal Odoo best practices are cached across all requests</li>
+            <li>Client-specific context (code, config) is cached per client</li>
+            <li>Cache lasts 5 minutes, reducing costs by up to 90%</li>
+            <li>Only fresh ticket data is sent with each request</li>
+        </ul>
+        <p>
+            <strong>Estimated costs:</strong> First analysis ~$0.10, subsequent analyses ~$0.01-0.02
+            (with cache hits)
+        </p>
+    </div>
+
+    <div class="section">
+        <h2>Security</h2>
+        <ul>
+            <li>GitHub tokens are only visible to system administrators</li>
+            <li>Claude API key stored in system parameters (admin access only)</li>
+            <li>All API calls logged for audit purposes</li>
+            <li>Sensitive data never included in AI prompts</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Support & Development</h2>
+        <p>
+            <strong>Developer:</strong> The IT Team<br>
+            <strong>Website:</strong> <a href="https://theitteam.co.za">https://theitteam.co.za</a><br>
+            <strong>License:</strong> LGPL-3
+        </p>
+        <p>
+            For support, bug reports, or feature requests, please contact The IT Team.
+        </p>
+    </div>
+
+    <div class="footer">
+        <p>Powered by Anthropic Claude AI | Built for Odoo Excellence</p>
+    </div>
+</body>
+</html>

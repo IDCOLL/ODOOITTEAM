@@ -1,0 +1,7 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_helpdesk_ticket_user,helpdesk.ticket.user,helpdesk.model_helpdesk_ticket,helpdesk.group_helpdesk_user,1,1,1,0
+access_helpdesk_ticket_manager,helpdesk.ticket.manager,helpdesk.model_helpdesk_ticket,helpdesk.group_helpdesk_manager,1,1,1,1
+access_res_partner_user,res.partner.user,base.model_res_partner,helpdesk.group_helpdesk_user,1,1,0,0
+access_res_partner_manager,res.partner.manager,base.model_res_partner,helpdesk.group_helpdesk_manager,1,1,1,0
+access_ir_config_parameter_user,ir.config.parameter.user,base.model_ir_config_parameter,helpdesk.group_helpdesk_user,1,0,0,0
+access_ir_config_parameter_manager,ir.config.parameter.manager,base.model_ir_config_parameter,helpdesk.group_helpdesk_manager,1,1,1,0

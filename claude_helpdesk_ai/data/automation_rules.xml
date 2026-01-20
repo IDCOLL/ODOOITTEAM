@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data noupdate="1">
+        <!-- Server Action: Auto-analyze ticket -->
+        <record id="action_auto_analyze_ticket" model="ir.actions.server">
+            <field name="name">Claude AI: Auto-Analyze Ticket</field>
+            <field name="model_id" ref="helpdesk.model_helpdesk_ticket"/>
+            <field name="binding_model_id" ref="helpdesk.model_helpdesk_ticket"/>
+            <field name="state">code</field>
+            <field name="code">
+# Auto-analyze newly created ticket with Claude AI
+for record in records:
+    try:
+        record._perform_claude_analysis()
+    except Exception as e:
+        # Log error but don't block ticket creation
+        import logging
+        _logger = logging.getLogger(__name__)
+        _logger.error('Auto-analysis failed for ticket %s: %s', record.id, str(e))
+            </field>
+        </record>
+
+        <!-- Automated Action: Trigger on ticket creation -->
+        <record id="rule_auto_analyze_new_tickets" model="base.automation">
+            <field name="name">Claude AI: Auto-Analyze New Tickets</field>
+            <field name="model_id" ref="helpdesk.model_helpdesk_ticket"/>
+            <field name="trigger">on_create</field>
+            <field name="active" eval="False"/>
+            <field name="filter_domain">[('partner_id.x_enable_auto_analysis', '=', True), ('partner_id.x_github_repo', '!=', False)]</field>
+            <field name="state">code</field>
+            <field name="code">
+# Auto-analyze newly created ticket with Claude AI
+for record in records:
+    try:
+        record._perform_claude_analysis()
+    except Exception as e:
+        # Log error but don't block ticket creation
+        import logging
+        _logger = logging.getLogger(__name__)
+        _logger.error('Auto-analysis failed for ticket %s: %s', record.id, str(e))
+            </field>
+        </record>
+    </data>
+</odoo>

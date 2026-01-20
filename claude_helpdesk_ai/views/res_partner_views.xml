@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Extend Partner Form View -->
+        <record id="view_partner_form_claude_ai" model="ir.ui.view">
+            <field name="name">res.partner.form.claude.ai</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <notebook position="inside">
+                    <page string="Claude AI &amp; GitHub" name="claude_ai_github">
+                        <group>
+                            <group string="GitHub Configuration">
+                                <field name="x_github_repo" placeholder="https://github.com/owner/repo"/>
+                                <field name="x_github_token" password="True"/>
+                                <field name="x_github_default_branch"/>
+                                <field name="x_github_dev_branch_prefix"/>
+                                <field name="x_github_addons_path"/>
+                                <button name="action_test_github_connection"
+                                        string="Test Connection"
+                                        type="object"
+                                        class="btn-primary"
+                                        attrs="{'invisible': [('x_github_repo', '=', False)]}"/>
+                            </group>
+                            <group string="Odoo Environment">
+                                <field name="x_odoo_version"/>
+                                <field name="x_custom_modules" placeholder="module1, module2, module3"/>
+                                <field name="x_odoo_config_notes" placeholder="Additional environment details, customizations, or architecture notes..."/>
+                            </group>
+                        </group>
+                        <group>
+                            <group string="AI Settings">
+                                <field name="x_enable_auto_analysis"/>
+                                <field name="x_auto_create_pr"/>
+                            </group>
+                            <group string="Statistics">
+                                <field name="x_total_tickets_analyzed"/>
+                                <field name="x_total_prs_created"/>
+                                <button name="action_view_analyzed_tickets"
+                                        string="View Analyzed Tickets"
+                                        type="object"
+                                        class="btn-link"
+                                        attrs="{'invisible': [('x_total_tickets_analyzed', '=', 0)]}"/>
+                                <button name="action_refresh_cache"
+                                        string="Refresh Statistics"
+                                        type="object"
+                                        class="btn-secondary"/>
+                            </group>
+                        </group>
+                    </page>
+                </notebook>
+            </field>
+        </record>
+    </data>
+</odoo>
