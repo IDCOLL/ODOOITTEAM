@@ -7,12 +7,12 @@
             <field name="model">res.partner</field>
             <field name="inherit_id" ref="base.view_partner_form"/>
             <field name="arch" type="xml">
-                <!-- Add button in the header area -->
-                <xpath expr="//header" position="inside">
+                <!-- Add button box for Excel export -->
+                <xpath expr="//div[hasclass('oe_button_box')]" position="inside">
                     <button name="action_export_contact_excel"
                             string="Download Excel"
                             type="object"
-                            class="btn-primary"
+                            class="oe_stat_button"
                             icon="fa-file-excel-o"
                             help="Download contact information as Excel file"/>
                 </xpath>
