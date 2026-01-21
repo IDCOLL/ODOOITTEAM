@@ -48,7 +48,6 @@ class ResPartner(models.Model):
         return [
             'Name',
             'Phone',
-            'Mobile',
             'Email',
             'Street',
             'Street 2',
@@ -68,7 +67,6 @@ class ResPartner(models.Model):
         return [
             self.name or '',
             self.phone or '',
-            self.mobile or '',
             self.email or '',
             self.street or '',
             self.street2 or '',
