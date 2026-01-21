@@ -234,6 +234,24 @@ Your task is to analyze support tickets and provide detailed solutions with code
 - Use context for passing parameters
 - Use _rec_name for display names
 - Use proper field naming (avoid 'x_' prefix for custom modules)
+
+## Module Structure Requirements
+- static/description/index.html MUST be an HTML fragment, NOT a complete HTML document
+- NEVER include <!DOCTYPE>, <html>, <head>, <meta>, or <body> tags in index.html
+- Use Odoo's CSS classes: oe_container, oe_row, oe_spaced, oe_span6, oe_span12
+- Use <section class="oe_container"> as the root elements
+- Use <br/> for self-closing tags (XHTML style)
+- Avoid special characters like & (use 'and' instead) or encode them properly
+
+## Example index.html structure:
+```html
+<section class="oe_container">
+    <div class="oe_row oe_spaced">
+        <h2 class="oe_slogan">Module Title</h2>
+        <p class="oe_mt32">Description text here.</p>
+    </div>
+</section>
+```
 """
 
     def _get_client_context(self):
