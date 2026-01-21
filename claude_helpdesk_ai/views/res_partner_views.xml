@@ -12,7 +12,7 @@
                         <group>
                             <group string="GitHub Configuration">
                                 <field name="x_github_repo" placeholder="https://github.com/owner/repo"/>
-                                <field name="x_github_token" password="True"/>
+                                <field name="x_github_token" widget="password"/>
                                 <field name="x_github_default_branch"/>
                                 <field name="x_github_dev_branch_prefix"/>
                                 <field name="x_github_addons_path"/>

@@ -12,9 +12,9 @@
 for record in records:
     try:
         record._perform_claude_analysis()
-    except Exception as e:
-        # Log error but don't block ticket creation
-        log('Auto-analysis failed for ticket %s: %s' % (record.id, str(e)), level='error')
+    except Exception:
+        # Silently continue - don't block ticket creation
+        pass
             </field>
         </record>
 
@@ -25,16 +25,7 @@ for record in records:
             <field name="trigger">on_create</field>
             <field name="active" eval="False"/>
             <field name="filter_domain">[('partner_id.x_enable_auto_analysis', '=', True), ('partner_id.x_github_repo', '!=', False)]</field>
-            <field name="state">code</field>
-            <field name="code">
-# Auto-analyze newly created ticket with Claude AI
-for record in records:
-    try:
-        record._perform_claude_analysis()
-    except Exception as e:
-        # Log error but don't block ticket creation
-        log('Auto-analysis failed for ticket %s: %s' % (record.id, str(e)), level='error')
-            </field>
+            <field name="action_server_ids" eval="[(4, ref('action_auto_analyze_ticket'))]"/>
         </record>
     </data>
 </odoo>
