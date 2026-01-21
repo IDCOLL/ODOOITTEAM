@@ -364,10 +364,11 @@ Your task is to analyze support tickets and provide detailed solutions with code
             return ""
 
         # Find resolved tickets with AI analysis
+        # Use fold field for Odoo 19+ compatibility (is_close was renamed/removed)
         past_tickets = self.search([
             ('partner_id', '=', partner.id),
             ('x_ai_analyzed', '=', True),
-            ('stage_id.is_close', '=', True),
+            ('stage_id.fold', '=', True),
             ('id', '!=', self.id),
         ], limit=5, order='x_analysis_date desc')
 

@@ -76,8 +76,12 @@ Perfect for MSPs, software agencies, and in-house teams managing multiple Odoo i
   - Default model: `claude-sonnet-4-20250514`
 
 - **GitHub:** Personal Access Token with repository permissions
-  - Generate at: https://github.com/settings/tokens
-  - Required scopes: `repo` (full repository access)
+  - Generate at: https://github.com/settings/personal-access-tokens/new
+  - **Fine-grained token permissions:**
+    - Repository access: Select specific repositories
+    - Contents: Read and write
+    - Pull requests: Read and write
+  - Or use classic token with `repo` scope
 
 ---
 
@@ -299,8 +303,9 @@ The module uses prompt caching to reduce Claude API costs by up to 90%.
 ### "Connection failed" when testing GitHub
 
 - Verify repository URL format: `https://github.com/owner/repo`
-- Generate a new token at https://github.com/settings/tokens
-- Ensure token has `repo` scope
+- Generate a new token at https://github.com/settings/personal-access-tokens/new
+- For fine-grained tokens: ensure **Contents** and **Pull requests** have read/write access
+- For classic tokens: ensure token has `repo` scope
 - Check token hasn't expired
 
 ### "No module detected for ticket"
