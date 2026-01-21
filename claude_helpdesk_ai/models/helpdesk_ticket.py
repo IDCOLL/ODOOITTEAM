@@ -74,6 +74,36 @@ class HelpdeskTicket(models.Model):
         help='Detailed steps to reproduce the issue'
     )
 
+    # Feedback Fields
+    x_feedback_text = fields.Text(
+        string='Feedback',
+        help='Provide feedback if the AI solution did not work as expected'
+    )
+    x_feedback_status = fields.Selection([
+        ('pending', 'Pending Review'),
+        ('working', 'Fix Working'),
+        ('not_working', 'Fix Not Working'),
+        ('partial', 'Partially Working'),
+    ], string='Fix Status', default=False,
+        help='Status of the AI-proposed fix after testing'
+    )
+    x_feedback_date = fields.Datetime(
+        string='Feedback Date',
+        readonly=True,
+        help='When feedback was last submitted'
+    )
+    x_reanalysis_count = fields.Integer(
+        string='Re-analysis Count',
+        default=0,
+        readonly=True,
+        help='Number of times this ticket has been re-analyzed based on feedback'
+    )
+    x_feedback_history = fields.Text(
+        string='Feedback History',
+        readonly=True,
+        help='JSON array of all feedback submissions and re-analyses'
+    )
+
     # Computed Fields
     x_ai_analyzed = fields.Boolean(
         string='AI Analyzed',
@@ -87,13 +117,20 @@ class HelpdeskTicket(models.Model):
         store=True,
         help='Whether a GitHub PR has been created'
     )
+    x_has_feedback = fields.Boolean(
+        string='Has Feedback',
+        compute='_compute_ai_status',
+        store=True,
+        help='Whether feedback has been submitted for this ticket'
+    )
 
-    @api.depends('x_claude_analysis', 'x_github_pr_url')
+    @api.depends('x_claude_analysis', 'x_github_pr_url', 'x_feedback_status')
     def _compute_ai_status(self):
-        """Compute AI analysis and PR creation status."""
+        """Compute AI analysis, PR creation, and feedback status."""
         for ticket in self:
             ticket.x_ai_analyzed = bool(ticket.x_claude_analysis)
             ticket.x_pr_created = bool(ticket.x_github_pr_url)
+            ticket.x_has_feedback = bool(ticket.x_feedback_status)
 
     def action_analyze_with_claude(self):
         """Manual button action to trigger Claude AI analysis."""
@@ -166,14 +203,31 @@ class HelpdeskTicket(models.Model):
 
     def _build_cached_prompt(self):
         """Build the cached context portion of the prompt."""
-        # Get universal Odoo context
+        partner = self.partner_id
+        project_type = partner.x_project_type if partner else 'odoo'
+
+        # Get universal context based on project type
         universal_context = self._get_universal_context()
 
         # Get client-specific context
         client_context = self._get_client_context()
 
+        # Build role description based on project type
+        role_descriptions = {
+            'odoo': 'an expert Odoo developer',
+            'vue': 'an expert Vue.js developer',
+            'react': 'an expert React developer',
+            'node': 'an expert Node.js backend developer',
+            'python': 'an expert Python developer',
+            'django': 'an expert Django developer',
+            'flask': 'an expert Flask developer',
+            'fullstack': 'an expert full-stack developer',
+            'other': 'an expert software developer',
+        }
+        role = role_descriptions.get(project_type, 'an expert software developer')
+
         # Combine with cache control markers
-        cached_prompt = f"""You are an expert Odoo developer analyzing a support ticket.
+        cached_prompt = f"""You are {role} analyzing a support ticket.
 
 {universal_context}
 
@@ -184,7 +238,28 @@ Your task is to analyze support tickets and provide detailed solutions with code
         return cached_prompt
 
     def _get_universal_context(self):
-        """Return universal Odoo best practices and guidelines."""
+        """Return universal best practices based on project type."""
+        partner = self.partner_id
+        project_type = partner.x_project_type if partner else 'odoo'
+
+        # Return technology-specific guidelines
+        if project_type == 'odoo':
+            return self._get_odoo_guidelines()
+        elif project_type == 'vue':
+            return self._get_vue_guidelines()
+        elif project_type == 'react':
+            return self._get_react_guidelines()
+        elif project_type == 'node':
+            return self._get_node_guidelines()
+        elif project_type in ('python', 'django', 'flask'):
+            return self._get_python_guidelines(project_type)
+        elif project_type == 'fullstack':
+            return self._get_fullstack_guidelines()
+        else:
+            return self._get_general_guidelines()
+
+    def _get_odoo_guidelines(self):
+        """Return Odoo-specific development guidelines."""
         return """# ODOO DEVELOPMENT BEST PRACTICES
 
 ## Framework Guidelines
@@ -242,16 +317,343 @@ Your task is to analyze support tickets and provide detailed solutions with code
 - Use <section class="oe_container"> as the root elements
 - Use <br/> for self-closing tags (XHTML style)
 - Avoid special characters like & (use 'and' instead) or encode them properly
+"""
 
-## Example index.html structure:
-```html
-<section class="oe_container">
-    <div class="oe_row oe_spaced">
-        <h2 class="oe_slogan">Module Title</h2>
-        <p class="oe_mt32">Description text here.</p>
-    </div>
-</section>
-```
+    def _get_vue_guidelines(self):
+        """Return Vue.js-specific development guidelines."""
+        return """# VUE.JS DEVELOPMENT BEST PRACTICES
+
+## Component Guidelines
+- Use Composition API with <script setup> for Vue 3 projects
+- Keep components small and focused (single responsibility)
+- Use props for parent-to-child communication
+- Use emits for child-to-parent communication
+- Use provide/inject sparingly for deep prop drilling
+- Prefer computed properties over methods for derived state
+- Use v-model for two-way binding on form inputs
+
+## State Management
+- Use Pinia for global state management (Vue 3)
+- Keep store modules focused and well-organized
+- Use getters for derived state
+- Use actions for async operations
+- Avoid mutating state directly outside of actions/mutations
+
+## Reactivity Best Practices
+- Use ref() for primitive values, reactive() for objects
+- Use computed() for derived reactive values
+- Use watch() and watchEffect() appropriately
+- Avoid destructuring reactive objects (loses reactivity)
+- Use toRefs() when destructuring is needed
+
+## Performance Optimization
+- Use v-show vs v-if appropriately (v-show for frequent toggles)
+- Use key attribute properly in v-for loops
+- Lazy load routes and components
+- Use shallowRef/shallowReactive when deep reactivity not needed
+- Memoize expensive computations
+
+## Code Organization
+- Follow consistent file naming (PascalCase for components)
+- Organize by feature/module, not by type
+- Use index.ts/js for clean imports
+- Keep composables in dedicated folders
+- Separate concerns: components, composables, stores, utils
+
+## TypeScript Integration
+- Define proper interfaces for props and emits
+- Use defineProps<T>() and defineEmits<T>() with types
+- Type your store state and actions
+- Avoid using 'any' type
+
+## Testing
+- Write unit tests for composables and utilities
+- Write component tests for complex interactions
+- Use data-testid attributes for test selectors
+- Mock external dependencies properly
+"""
+
+    def _get_react_guidelines(self):
+        """Return React-specific development guidelines."""
+        return """# REACT DEVELOPMENT BEST PRACTICES
+
+## Component Guidelines
+- Use functional components with hooks
+- Keep components small and focused
+- Use props for component configuration
+- Lift state up when needed for sharing
+- Use composition over inheritance
+- Implement proper error boundaries
+
+## Hooks Best Practices
+- Follow rules of hooks (top level, React functions only)
+- Use useState for local component state
+- Use useEffect for side effects with proper dependencies
+- Use useCallback for memoized callbacks
+- Use useMemo for expensive computations
+- Create custom hooks for reusable logic
+
+## State Management
+- Use React Context for simple global state
+- Consider Redux Toolkit or Zustand for complex state
+- Keep state as local as possible
+- Normalize complex nested state
+- Use selectors for derived state
+
+## Performance Optimization
+- Use React.memo for expensive pure components
+- Implement proper key props in lists
+- Use code splitting with React.lazy
+- Avoid inline function definitions in render
+- Use virtualization for long lists
+
+## Code Organization
+- Follow consistent file naming conventions
+- Organize by feature/module
+- Separate presentational and container components
+- Keep hooks in dedicated files
+- Use barrel exports (index.ts)
+
+## TypeScript Integration
+- Define interfaces for props and state
+- Use generic types for reusable components
+- Type your hooks properly
+- Avoid 'any' type usage
+
+## Testing
+- Write unit tests for utilities and hooks
+- Use React Testing Library for component tests
+- Test user interactions, not implementation
+- Mock external dependencies properly
+"""
+
+    def _get_node_guidelines(self):
+        """Return Node.js-specific development guidelines."""
+        return """# NODE.JS BACKEND BEST PRACTICES
+
+## Architecture Guidelines
+- Follow layered architecture (routes, controllers, services, repositories)
+- Use dependency injection for better testability
+- Implement proper error handling middleware
+- Use environment variables for configuration
+- Follow 12-factor app principles
+
+## API Design
+- Follow RESTful conventions
+- Use proper HTTP methods and status codes
+- Implement consistent error responses
+- Version your APIs
+- Document with OpenAPI/Swagger
+
+## Security Best Practices
+- Validate and sanitize all inputs
+- Use parameterized queries (prevent SQL injection)
+- Implement proper authentication (JWT, sessions)
+- Use HTTPS in production
+- Set security headers (helmet)
+- Implement rate limiting
+- Handle CORS properly
+
+## Error Handling
+- Use async/await with try-catch
+- Create custom error classes
+- Implement global error handling middleware
+- Log errors with context
+- Never expose internal errors to clients
+
+## Database Best Practices
+- Use an ORM or query builder (Prisma, Knex, Sequelize)
+- Implement proper migrations
+- Use transactions for multi-step operations
+- Index frequently queried columns
+- Implement connection pooling
+
+## Performance
+- Use async operations properly
+- Implement caching (Redis)
+- Use streaming for large data
+- Profile and optimize bottlenecks
+- Use clustering for CPU-intensive tasks
+
+## Code Quality
+- Use TypeScript for type safety
+- Follow consistent code style (ESLint, Prettier)
+- Write meaningful tests
+- Document complex logic
+- Keep functions small and focused
+"""
+
+    def _get_python_guidelines(self, project_type):
+        """Return Python/Django/Flask-specific guidelines."""
+        base = """# PYTHON DEVELOPMENT BEST PRACTICES
+
+## Code Quality
+- Follow PEP 8 style guide
+- Use type hints for function signatures
+- Write docstrings for modules, classes, and functions
+- Keep functions focused and under 50 lines
+- Use meaningful variable and function names
+- Follow DRY principle
+
+## Error Handling
+- Use specific exception types
+- Implement proper try-except blocks
+- Log errors with context
+- Create custom exceptions when needed
+- Never catch bare exceptions
+
+## Security
+- Validate and sanitize all inputs
+- Use parameterized queries
+- Never store passwords in plain text
+- Use environment variables for secrets
+- Implement proper authentication
+"""
+
+        if project_type == 'django':
+            base += """
+## DJANGO-SPECIFIC GUIDELINES
+
+## Model Best Practices
+- Use appropriate field types
+- Add indexes for frequently queried fields
+- Use select_related and prefetch_related
+- Implement __str__ methods
+- Use model managers for complex queries
+
+## View Best Practices
+- Use class-based views when appropriate
+- Implement proper permission classes
+- Use serializers for validation (DRF)
+- Keep views thin, logic in services
+
+## Security
+- Use Django's built-in protections (CSRF, XSS)
+- Implement proper authentication
+- Use permission classes
+- Validate file uploads
+
+## Testing
+- Use Django's test client
+- Write model, view, and integration tests
+- Use factories for test data
+- Test permissions and edge cases
+"""
+        elif project_type == 'flask':
+            base += """
+## FLASK-SPECIFIC GUIDELINES
+
+## Application Structure
+- Use application factory pattern
+- Organize with blueprints
+- Use Flask extensions appropriately
+- Implement proper configuration management
+
+## Request Handling
+- Use request context properly
+- Implement input validation
+- Return consistent response formats
+- Use proper HTTP status codes
+
+## Database
+- Use Flask-SQLAlchemy or similar ORM
+- Implement database migrations (Flask-Migrate)
+- Use connection pooling
+- Handle sessions properly
+
+## Security
+- Use Flask-Login for authentication
+- Implement CSRF protection
+- Validate all inputs
+- Set secure cookie flags
+"""
+
+        return base
+
+    def _get_fullstack_guidelines(self):
+        """Return guidelines for full-stack applications."""
+        return """# FULL-STACK DEVELOPMENT BEST PRACTICES
+
+## Architecture
+- Separate frontend and backend clearly
+- Use API contracts (OpenAPI/GraphQL schema)
+- Implement proper authentication flow
+- Handle errors consistently across stack
+
+## Frontend Guidelines
+- Use modern framework best practices
+- Implement proper state management
+- Handle loading and error states
+- Optimize for performance
+
+## Backend Guidelines
+- Follow RESTful or GraphQL conventions
+- Implement proper validation
+- Use appropriate HTTP status codes
+- Document your APIs
+
+## Security
+- Implement proper authentication (JWT, sessions)
+- Validate inputs on both frontend and backend
+- Use HTTPS in production
+- Handle CORS properly
+- Protect against common vulnerabilities (XSS, CSRF, SQL injection)
+
+## Database
+- Use appropriate database for your needs
+- Implement proper migrations
+- Optimize queries
+- Use transactions where needed
+
+## Testing
+- Write unit tests for both frontend and backend
+- Implement integration tests
+- Use E2E tests for critical flows
+- Mock external dependencies
+
+## Deployment
+- Use environment variables for configuration
+- Implement CI/CD pipelines
+- Use containerization when appropriate
+- Monitor application health
+"""
+
+    def _get_general_guidelines(self):
+        """Return general software development guidelines."""
+        return """# SOFTWARE DEVELOPMENT BEST PRACTICES
+
+## Code Quality
+- Write clean, readable code
+- Follow consistent naming conventions
+- Keep functions/methods small and focused
+- Use meaningful names for variables and functions
+- Comment complex logic
+- Follow DRY principle
+
+## Error Handling
+- Handle errors gracefully
+- Log errors with context
+- Provide meaningful error messages
+- Never expose internal errors to users
+
+## Security
+- Validate all inputs
+- Use parameterized queries for databases
+- Implement proper authentication
+- Follow principle of least privilege
+- Keep dependencies updated
+
+## Testing
+- Write unit tests for critical logic
+- Implement integration tests
+- Test edge cases
+- Mock external dependencies
+
+## Documentation
+- Document APIs and interfaces
+- Keep README updated
+- Document complex algorithms
+- Use inline comments sparingly but effectively
 """
 
     def _get_client_context(self):
@@ -260,25 +662,47 @@ Your task is to analyze support tickets and provide detailed solutions with code
         if not partner:
             return "No client information available."
 
+        project_type = partner.x_project_type or 'odoo'
+
         context_parts = [
             f"\n# CLIENT-SPECIFIC INFORMATION",
             f"\nClient: {partner.name}",
+            f"Project Type: {dict(partner._fields['x_project_type'].selection).get(project_type, 'Unknown')}",
         ]
 
-        # Add Odoo version info
-        if partner.x_odoo_version:
-            version_label = dict(partner._fields['x_odoo_version'].selection).get(
-                partner.x_odoo_version, 'Unknown'
-            )
-            context_parts.append(f"Odoo Version: {version_label}")
+        # Add project-type specific information
+        if project_type == 'odoo':
+            # Odoo-specific context
+            if partner.x_odoo_version:
+                version_label = dict(partner._fields['x_odoo_version'].selection).get(
+                    partner.x_odoo_version, 'Unknown'
+                )
+                context_parts.append(f"Odoo Version: {version_label}")
 
-        # Add custom modules
-        if partner.x_custom_modules:
-            context_parts.append(f"\nCustom Modules: {partner.x_custom_modules}")
+            if partner.x_custom_modules:
+                context_parts.append(f"\nCustom Modules: {partner.x_custom_modules}")
 
-        # Add configuration notes
-        if partner.x_odoo_config_notes:
-            context_parts.append(f"\nConfiguration Notes:\n{partner.x_odoo_config_notes}")
+            if partner.x_odoo_config_notes:
+                context_parts.append(f"\nConfiguration Notes:\n{partner.x_odoo_config_notes}")
+        else:
+            # Custom app context
+            if partner.x_app_framework_version:
+                context_parts.append(f"Framework Version: {partner.x_app_framework_version}")
+
+            if partner.x_app_tech_stack:
+                context_parts.append(f"\n## Technology Stack:\n{partner.x_app_tech_stack}")
+
+            if partner.x_app_architecture_notes:
+                context_parts.append(f"\n## Architecture Notes:\n{partner.x_app_architecture_notes}")
+
+            if partner.x_app_build_commands:
+                context_parts.append(f"\n## Build/Run Commands:\n```\n{partner.x_app_build_commands}\n```")
+
+            if partner.x_app_test_commands:
+                context_parts.append(f"\n## Test Commands:\n```\n{partner.x_app_test_commands}\n```")
+
+            if partner.x_app_key_files:
+                context_parts.append(f"\n## Key Files/Directories:\n{partner.x_app_key_files}")
 
         # Fetch GitHub code if available
         if partner.x_github_repo and partner.x_github_token:
@@ -299,41 +723,17 @@ Your task is to analyze support tickets and provide detailed solutions with code
         if not partner or not partner.x_github_repo or not partner.x_github_token:
             return ""
 
+        project_type = partner.x_project_type or 'odoo'
+
         try:
             from odoo.addons.claude_helpdesk_ai.lib.github_integration import GitHubIntegration
 
             github = GitHubIntegration(partner.x_github_repo, partner.x_github_token)
 
-            # Detect affected module from ticket
-            module_name = self._detect_affected_module()
-            if not module_name:
-                _logger.info('No module detected for ticket %s', self.id)
-                return ""
-
-            # Fetch module files
-            module_files = github.get_odoo_module_files(
-                module_name,
-                partner.x_github_addons_path or 'addons'
-            )
-
-            if not module_files:
-                _logger.warning(
-                    'No files found for module %s in repo %s',
-                    module_name, partner.x_github_repo
-                )
-                return ""
-
-            # Build code context
-            code_parts = [f"## Module: {module_name}\n"]
-
-            for file_info in module_files[:20]:  # Limit to 20 files to avoid token limits
-                file_path = file_info['path']
-                content = file_info.get('content', '')
-
-                if content:
-                    code_parts.append(f"\n### File: {file_path}\n```python\n{content}\n```")
-
-            return '\n'.join(code_parts)
+            if project_type == 'odoo':
+                return self._fetch_odoo_module_code(github)
+            else:
+                return self._fetch_custom_app_code(github)
 
         except Exception as e:
             _logger.error(
@@ -341,6 +741,129 @@ Your task is to analyze support tickets and provide detailed solutions with code
                 self.id, str(e), exc_info=True
             )
             return ""
+
+    def _fetch_odoo_module_code(self, github):
+        """Fetch Odoo module code from GitHub."""
+        partner = self.partner_id
+
+        # Detect affected module from ticket
+        module_name = self._detect_affected_module()
+        if not module_name:
+            _logger.info('No module detected for ticket %s', self.id)
+            return ""
+
+        # Fetch module files
+        module_files = github.get_odoo_module_files(
+            module_name,
+            partner.x_github_addons_path or 'addons'
+        )
+
+        if not module_files:
+            _logger.warning(
+                'No files found for module %s in repo %s',
+                module_name, partner.x_github_repo
+            )
+            return ""
+
+        # Build code context
+        code_parts = [f"## Module: {module_name}\n"]
+
+        for file_info in module_files[:20]:  # Limit to 20 files to avoid token limits
+            file_path = file_info['path']
+            content = file_info.get('content', '')
+
+            if content:
+                code_parts.append(f"\n### File: {file_path}\n```python\n{content}\n```")
+
+        return '\n'.join(code_parts)
+
+    def _fetch_custom_app_code(self, github):
+        """Fetch custom app code from GitHub based on key files or source path."""
+        partner = self.partner_id
+        project_type = partner.x_project_type or 'other'
+
+        # Determine file extensions based on project type
+        file_extensions = self._get_file_extensions_for_project(project_type)
+
+        # Get source path
+        source_path = partner.x_github_source_path or 'src'
+
+        # Try to fetch files from the source directory
+        try:
+            app_files = github.get_app_files(
+                source_path,
+                file_extensions,
+                max_files=25
+            )
+
+            if not app_files:
+                # Try root directory if source path doesn't work
+                app_files = github.get_app_files(
+                    '',
+                    file_extensions,
+                    max_files=25
+                )
+
+            if not app_files:
+                _logger.warning(
+                    'No files found in repo %s for project type %s',
+                    partner.x_github_repo, project_type
+                )
+                return ""
+
+            # Build code context
+            code_parts = [f"## Application Source Code\n"]
+
+            for file_info in app_files:
+                file_path = file_info['path']
+                content = file_info.get('content', '')
+
+                if content:
+                    # Determine language for syntax highlighting
+                    lang = self._get_language_for_file(file_path)
+                    code_parts.append(f"\n### File: {file_path}\n```{lang}\n{content}\n```")
+
+            return '\n'.join(code_parts)
+
+        except Exception as e:
+            _logger.error('Failed to fetch custom app code: %s', str(e))
+            return ""
+
+    def _get_file_extensions_for_project(self, project_type):
+        """Return relevant file extensions for each project type."""
+        extensions_map = {
+            'vue': ['.vue', '.ts', '.js', '.json'],
+            'react': ['.tsx', '.jsx', '.ts', '.js', '.json'],
+            'node': ['.ts', '.js', '.json'],
+            'python': ['.py', '.json', '.yaml', '.yml'],
+            'django': ['.py', '.html', '.json', '.yaml'],
+            'flask': ['.py', '.html', '.json', '.yaml'],
+            'fullstack': ['.vue', '.tsx', '.jsx', '.ts', '.js', '.py', '.json'],
+            'other': ['.py', '.js', '.ts', '.json', '.yaml'],
+        }
+        return extensions_map.get(project_type, extensions_map['other'])
+
+    def _get_language_for_file(self, file_path):
+        """Determine programming language from file extension."""
+        ext_map = {
+            '.py': 'python',
+            '.js': 'javascript',
+            '.ts': 'typescript',
+            '.tsx': 'typescript',
+            '.jsx': 'javascript',
+            '.vue': 'vue',
+            '.json': 'json',
+            '.yaml': 'yaml',
+            '.yml': 'yaml',
+            '.html': 'html',
+            '.css': 'css',
+            '.scss': 'scss',
+            '.sql': 'sql',
+        }
+        for ext, lang in ext_map.items():
+            if file_path.endswith(ext):
+                return lang
+        return 'text'
 
     def _detect_affected_module(self):
         """Auto-detect affected module from ticket description or logs."""
@@ -804,3 +1327,309 @@ IMPORTANT:
             }
         else:
             raise UserError(_('Failed to create pull request. Check the logs for details.'))
+
+    def action_submit_feedback(self):
+        """Submit feedback about the AI fix and optionally re-analyze."""
+        self.ensure_one()
+
+        if not self.x_ai_analyzed:
+            raise UserError(_('No AI analysis exists for this ticket yet.'))
+
+        if not self.x_feedback_status:
+            raise UserError(_('Please select a fix status before submitting feedback.'))
+
+        # Record feedback in history
+        self._record_feedback_history()
+
+        # Update feedback date
+        self.x_feedback_date = fields.Datetime.now()
+
+        # If fix is not working or partial, offer to re-analyze
+        if self.x_feedback_status in ('not_working', 'partial'):
+            if not self.x_feedback_text:
+                raise UserError(_(
+                    'Please provide feedback details explaining what went wrong '
+                    'so Claude can provide an improved solution.'
+                ))
+
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Feedback Recorded'),
+                    'message': _('Your feedback has been saved. Click "Re-analyze with Feedback" to get an improved solution.'),
+                    'type': 'warning',
+                    'sticky': False,
+                }
+            }
+
+        # Fix is working - just confirm
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Feedback Recorded'),
+                'message': _('Thank you for confirming the fix is working!'),
+                'type': 'success',
+                'sticky': False,
+            }
+        }
+
+    def action_reanalyze_with_feedback(self):
+        """Re-analyze ticket with Claude, including previous feedback."""
+        self.ensure_one()
+
+        if not self.x_ai_analyzed:
+            raise UserError(_('Please analyze the ticket first before requesting a re-analysis.'))
+
+        if not self.x_feedback_text:
+            raise UserError(_(
+                'Please provide feedback explaining what went wrong with the previous solution.'
+            ))
+
+        if not self.partner_id:
+            raise UserError(_('Please assign a customer to this ticket first.'))
+
+        _logger.info('Starting Claude AI re-analysis with feedback for ticket %s', self.id)
+
+        # Validate configuration
+        api_key = self.env['ir.config_parameter'].sudo().get_param(
+            'claude_helpdesk_ai.api_key'
+        )
+        if not api_key:
+            raise UserError(_(
+                'Claude API key not configured. '
+                'Please set system parameter: claude_helpdesk_ai.api_key'
+            ))
+
+        try:
+            # Build cached context (universal + client-specific)
+            cached_context = self._build_cached_prompt()
+
+            # Call Claude API with feedback context
+            response_dict = self._call_claude_api_with_feedback(cached_context, api_key)
+
+            # Process and store response
+            self._process_claude_response(response_dict)
+
+            # Increment re-analysis count
+            self.x_reanalysis_count += 1
+
+            # Clear feedback text for next iteration (status remains)
+            self.x_feedback_text = False
+
+            # Reset GitHub PR fields for new solution
+            self.x_github_branch = False
+            self.x_github_pr_url = False
+            self.x_github_pr_number = False
+
+            _logger.info('Claude AI re-analysis completed for ticket %s', self.id)
+
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Re-analysis Complete'),
+                    'message': _('Claude AI has provided an updated solution based on your feedback.'),
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+
+        except Exception as e:
+            _logger.error(
+                'Claude AI re-analysis failed for ticket %s: %s',
+                self.id, str(e), exc_info=True
+            )
+            raise UserError(_(
+                'Re-analysis failed: %s\n\n'
+                'Please check the logs for details.'
+            ) % str(e))
+
+    def _call_claude_api_with_feedback(self, cached_context, api_key):
+        """Call Claude API with feedback context for re-analysis."""
+        try:
+            import anthropic
+        except ImportError:
+            raise UserError(_(
+                'Python package "anthropic" is not installed. '
+                'Please install it: pip install anthropic'
+            ))
+
+        # Build the ticket prompt with feedback
+        ticket_prompt = self._build_ticket_prompt_with_feedback()
+
+        try:
+            client = anthropic.Anthropic(api_key=api_key)
+
+            # Create message with prompt caching
+            message = client.messages.create(
+                model="claude-sonnet-4-5-20250929",
+                max_tokens=8000,
+                temperature=0.2,
+                system=[
+                    {
+                        "type": "text",
+                        "text": cached_context,
+                        "cache_control": {"type": "ephemeral"}
+                    }
+                ],
+                messages=[
+                    {
+                        "role": "user",
+                        "content": ticket_prompt
+                    }
+                ]
+            )
+
+            # Extract response text
+            response_text = message.content[0].text
+
+            # Store raw response for debugging
+            self.x_claude_analysis_json = json.dumps({
+                'response': response_text,
+                'usage': {
+                    'input_tokens': message.usage.input_tokens,
+                    'output_tokens': message.usage.output_tokens,
+                    'cache_creation_tokens': getattr(message.usage, 'cache_creation_input_tokens', 0),
+                    'cache_read_tokens': getattr(message.usage, 'cache_read_input_tokens', 0),
+                },
+                'is_reanalysis': True,
+                'reanalysis_count': self.x_reanalysis_count + 1,
+            }, indent=2)
+
+            # Parse JSON response
+            response_dict = self._parse_claude_response(response_text)
+
+            return response_dict
+
+        except Exception as e:
+            _logger.error('Claude API call failed: %s', str(e), exc_info=True)
+            raise UserError(_(
+                'Failed to call Claude API: %s\n\n'
+                'Please check your API key and network connection.'
+            ) % str(e))
+
+    def _build_ticket_prompt_with_feedback(self):
+        """Build ticket prompt including previous analysis and feedback."""
+        parts = [
+            "# SUPPORT TICKET RE-ANALYSIS REQUEST",
+            f"\nTicket ID: {self.id}",
+            f"Title: {self.name or 'No title'}",
+            f"Customer: {self.partner_id.name if self.partner_id else 'Unknown'}",
+            f"\nThis ticket has been analyzed {self.x_reanalysis_count + 1} time(s) previously.",
+        ]
+
+        if self.description:
+            parts.append(f"\n## Original Description:\n{self.description}")
+
+        if self.x_error_logs:
+            parts.append(f"\n## Error Logs:\n{self.x_error_logs}")
+
+        if self.x_steps_to_reproduce:
+            parts.append(f"\n## Steps to Reproduce:\n{self.x_steps_to_reproduce}")
+
+        if self.x_affected_module:
+            parts.append(f"\n## Affected Module: {self.x_affected_module}")
+
+        # Add previous analysis
+        parts.append("\n## PREVIOUS AI ANALYSIS (DID NOT WORK):")
+        if self.x_claude_analysis_json:
+            try:
+                prev_response = json.loads(self.x_claude_analysis_json)
+                prev_analysis = prev_response.get('response', '')
+                if prev_analysis:
+                    # Truncate if too long
+                    if len(prev_analysis) > 4000:
+                        prev_analysis = prev_analysis[:4000] + "\n... (truncated)"
+                    parts.append(prev_analysis)
+            except (json.JSONDecodeError, TypeError):
+                parts.append(str(self.x_claude_analysis or 'Previous analysis not available'))
+
+        # Add user feedback
+        parts.append(f"\n## USER FEEDBACK ON PREVIOUS SOLUTION:")
+        parts.append(f"Status: {dict(self._fields['x_feedback_status'].selection).get(self.x_feedback_status, 'Unknown')}")
+        parts.append(f"\nFeedback Details:\n{self.x_feedback_text}")
+
+        # Add feedback history if available
+        if self.x_feedback_history:
+            try:
+                history = json.loads(self.x_feedback_history)
+                if len(history) > 1:  # More than just current feedback
+                    parts.append("\n## FEEDBACK HISTORY (Previous iterations):")
+                    for i, entry in enumerate(history[:-1], 1):  # Exclude current
+                        parts.append(f"\nIteration {i}:")
+                        parts.append(f"- Status: {entry.get('status', 'Unknown')}")
+                        parts.append(f"- Feedback: {entry.get('feedback', 'No feedback')}")
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+        parts.append("""
+
+# YOUR TASK
+
+The previous solution did NOT work. Based on the user's feedback, provide a REVISED solution.
+
+IMPORTANT:
+- Carefully analyze what went wrong with the previous solution
+- Address the specific issues mentioned in the user feedback
+- Provide a different approach if the previous one was fundamentally flawed
+- Do not repeat the same mistakes
+
+Return your response as valid JSON with this exact structure:
+
+{
+    "analysis": "Analysis of what went wrong and the revised root cause",
+    "solution_approach": "New/revised solution strategy addressing the feedback",
+    "code_changes": [
+        {
+            "file": "relative/path/to/file.py",
+            "action": "modify",
+            "content": "Complete file content after changes",
+            "explanation": "Why this change fixes the issue (addressing feedback)"
+        }
+    ],
+    "testing_steps": "Step-by-step instructions for testing the revised fix",
+    "estimated_hours": 2.5,
+    "additional_notes": "What was wrong before and how this solution differs",
+    "feedback_addressed": "Specific explanation of how each feedback point was addressed"
+}
+""")
+
+        return '\n'.join(parts)
+
+    def _record_feedback_history(self):
+        """Record current feedback in the history."""
+        history = []
+        if self.x_feedback_history:
+            try:
+                history = json.loads(self.x_feedback_history)
+            except (json.JSONDecodeError, TypeError):
+                history = []
+
+        # Add current feedback to history
+        history.append({
+            'date': fields.Datetime.now().isoformat(),
+            'status': self.x_feedback_status,
+            'feedback': self.x_feedback_text or '',
+            'reanalysis_count': self.x_reanalysis_count,
+        })
+
+        self.x_feedback_history = json.dumps(history, indent=2)
+
+    def action_mark_fix_working(self):
+        """Quick action to mark fix as working."""
+        self.ensure_one()
+        self.x_feedback_status = 'working'
+        self.x_feedback_date = fields.Datetime.now()
+        self._record_feedback_history()
+        return {
+            'type': 'ir.actions.client',
+            'tag': 'display_notification',
+            'params': {
+                'title': _('Success'),
+                'message': _('Fix marked as working. Thank you for your feedback!'),
+                'type': 'success',
+                'sticky': False,
+            }
+        }

@@ -14,6 +14,24 @@ class ResPartner(models.Model):
 
     _inherit = 'res.partner'
 
+    # Project Type Configuration
+    x_project_type = fields.Selection(
+        selection=[
+            ('odoo', 'Odoo Module'),
+            ('vue', 'Vue.js Application'),
+            ('react', 'React Application'),
+            ('node', 'Node.js Backend'),
+            ('python', 'Python Application'),
+            ('django', 'Django Application'),
+            ('flask', 'Flask Application'),
+            ('fullstack', 'Full Stack (Multiple)'),
+            ('other', 'Other'),
+        ],
+        string='Project Type',
+        default='odoo',
+        help='Type of project/application for this client'
+    )
+
     # GitHub Configuration
     x_github_repo = fields.Char(
         string='GitHub Repository URL',
@@ -39,8 +57,13 @@ class ResPartner(models.Model):
         default='addons',
         help='Path to addons directory in GitHub repo (e.g., addons, custom_addons, src)'
     )
+    x_github_source_path = fields.Char(
+        string='Source Code Path',
+        default='src',
+        help='Path to source code directory for non-Odoo projects (e.g., src, app, lib)'
+    )
 
-    # Odoo Environment Configuration
+    # Odoo Environment Configuration (visible when project_type is odoo)
     x_odoo_version = fields.Selection(
         selection=[
             ('14', 'Odoo 14.0'),
@@ -60,6 +83,32 @@ class ResPartner(models.Model):
     x_odoo_config_notes = fields.Text(
         string='Configuration Notes',
         help='Additional notes about client Odoo environment, customizations, or architecture'
+    )
+
+    # Custom App Configuration (visible when project_type is not odoo)
+    x_app_framework_version = fields.Char(
+        string='Framework Version',
+        help='Version of the main framework (e.g., Vue 3.4, React 18, Node 20)'
+    )
+    x_app_tech_stack = fields.Text(
+        string='Technology Stack',
+        help='Describe the tech stack: frameworks, libraries, databases, etc.\nExample: Vue 3 + Pinia + Vue Router, Node.js + Express, PostgreSQL, Redis'
+    )
+    x_app_architecture_notes = fields.Text(
+        string='Architecture Notes',
+        help='Describe the application architecture, folder structure, key patterns used.\nExample: Component-based SPA, REST API backend, JWT authentication'
+    )
+    x_app_build_commands = fields.Text(
+        string='Build/Run Commands',
+        help='Common commands for building and running the app.\nExample:\nnpm install\nnpm run dev\nnpm run build'
+    )
+    x_app_test_commands = fields.Text(
+        string='Test Commands',
+        help='Commands for running tests.\nExample:\nnpm run test\nnpm run test:e2e'
+    )
+    x_app_key_files = fields.Text(
+        string='Key Files/Directories',
+        help='Important files and directories to focus on.\nExample:\nsrc/components/ - Vue components\nsrc/stores/ - Pinia stores\nsrc/api/ - API client'
     )
 
     # AI Settings

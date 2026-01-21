@@ -24,6 +24,16 @@
                             type="object"
                             class="btn-info"
                             invisible="not x_github_pr_url"/>
+                    <button name="action_mark_fix_working"
+                            string="Fix Working"
+                            type="object"
+                            class="btn-success"
+                            invisible="not x_ai_analyzed or x_feedback_status == 'working'"/>
+                    <button name="action_reanalyze_with_feedback"
+                            string="Re-analyze with Feedback"
+                            type="object"
+                            class="btn-warning"
+                            invisible="not x_ai_analyzed or not x_feedback_text or x_feedback_status not in ('not_working', 'partial')"/>
                 </header>
 
                 <!-- Add notebook pages -->
@@ -35,6 +45,7 @@
                                 <field name="x_analysis_date"/>
                                 <field name="x_estimated_hours"/>
                                 <field name="x_affected_module"/>
+                                <field name="x_reanalysis_count"/>
                             </group>
                             <group string="GitHub Information">
                                 <field name="x_github_branch"/>
@@ -47,6 +58,28 @@
                         </group>
                         <group string="Proposed Code Changes">
                             <field name="x_proposed_changes" nolabel="1"/>
+                        </group>
+                        <separator string="Feedback on AI Solution"/>
+                        <group>
+                            <group>
+                                <field name="x_feedback_status" widget="radio" options="{'horizontal': true}"/>
+                                <field name="x_feedback_date" readonly="1"/>
+                            </group>
+                        </group>
+                        <group>
+                            <field name="x_feedback_text"
+                                   placeholder="If the fix didn't work, describe what went wrong, any new errors, or what behavior you expected vs what actually happened..."
+                                   nolabel="1"/>
+                        </group>
+                        <group>
+                            <button name="action_submit_feedback"
+                                    string="Submit Feedback"
+                                    type="object"
+                                    class="btn-primary"
+                                    invisible="not x_feedback_status"/>
+                        </group>
+                        <group string="Feedback History" invisible="not x_feedback_history">
+                            <field name="x_feedback_history" nolabel="1" readonly="1"/>
                         </group>
                         <group string="Full API Response (Debug)">
                             <field name="x_claude_analysis_json" nolabel="1"/>
@@ -74,6 +107,8 @@
                 <xpath expr="//list" position="inside">
                     <field name="x_ai_analyzed" optional="show"/>
                     <field name="x_pr_created" optional="show"/>
+                    <field name="x_feedback_status" optional="hide"/>
+                    <field name="x_reanalysis_count" optional="hide"/>
                 </xpath>
             </field>
         </record>
@@ -91,6 +126,13 @@
                             domain="[('x_pr_created', '=', True)]"/>
                     <filter string="Not Analyzed" name="filter_not_analyzed"
                             domain="[('x_ai_analyzed', '=', False)]"/>
+                    <separator/>
+                    <filter string="Fix Working" name="filter_fix_working"
+                            domain="[('x_feedback_status', '=', 'working')]"/>
+                    <filter string="Fix Not Working" name="filter_fix_not_working"
+                            domain="[('x_feedback_status', '=', 'not_working')]"/>
+                    <filter string="Needs Re-analysis" name="filter_needs_reanalysis"
+                            domain="[('x_feedback_status', 'in', ('not_working', 'partial')), ('x_feedback_text', '!=', False)]"/>
                 </search>
             </field>
         </record>

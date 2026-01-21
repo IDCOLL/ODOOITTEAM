@@ -228,6 +228,97 @@ class GitHubIntegration:
             )
             return []
 
+    def get_app_files(self, source_path='src', file_extensions=None, max_files=25):
+        """
+        Get application files for non-Odoo projects.
+
+        :param source_path: Path to source code directory (e.g., 'src', 'app', '')
+        :param file_extensions: List of file extensions to include (e.g., ['.ts', '.vue'])
+        :param max_files: Maximum number of files to fetch
+        :return: List of file dictionaries with path and content
+        """
+        if file_extensions is None:
+            file_extensions = ['.ts', '.js', '.vue', '.tsx', '.jsx', '.py', '.json']
+
+        try:
+            # Get all files in source directory recursively
+            all_files = self._walk_directory(source_path) if source_path else self._walk_directory('')
+
+            # Filter for relevant file types and prioritize key files
+            app_files = []
+            priority_patterns = [
+                'package.json', 'tsconfig.json', 'vite.config', 'webpack.config',
+                'main.ts', 'main.js', 'app.ts', 'app.js', 'index.ts', 'index.js',
+                'App.vue', 'App.tsx', 'App.jsx',
+                'router', 'store', 'api', 'service', 'composable', 'hook',
+                'requirements.txt', 'pyproject.toml', 'setup.py',
+            ]
+
+            # Sort files: prioritize important files first
+            def file_priority(file_info):
+                path = file_info['path'].lower()
+                for i, pattern in enumerate(priority_patterns):
+                    if pattern.lower() in path:
+                        return i
+                return len(priority_patterns)
+
+            for file_info in all_files:
+                file_path = file_info['path']
+
+                # Check extension
+                if any(file_path.endswith(ext) for ext in file_extensions):
+                    # Skip common non-essential directories
+                    skip_patterns = [
+                        'node_modules', '__pycache__', '.git', 'dist', 'build',
+                        '.cache', 'coverage', '.nyc_output', '.venv', 'venv',
+                        'migrations', 'test', 'tests', 'spec', '__tests__'
+                    ]
+                    if any(pattern in file_path for pattern in skip_patterns):
+                        continue
+
+                    app_files.append(file_info)
+
+            # Sort by priority and limit
+            app_files.sort(key=file_priority)
+            app_files = app_files[:max_files]
+
+            # Fetch content for selected files
+            result_files = []
+            for file_info in app_files:
+                try:
+                    content = self.get_file_content(file_info['path'])
+                    if content:
+                        # Truncate very large files
+                        if len(content) > 10000:
+                            content = content[:10000] + '\n\n... (truncated - file too large)'
+
+                        result_files.append({
+                            'path': file_info['path'],
+                            'name': file_info['name'],
+                            'type': file_info['type'],
+                            'content': content,
+                        })
+                except Exception as e:
+                    _logger.warning(
+                        'Failed to fetch content for %s: %s',
+                        file_info['path'], str(e)
+                    )
+                    continue
+
+            _logger.info(
+                'Fetched %d app files from path %s',
+                len(result_files), source_path or 'root'
+            )
+
+            return result_files
+
+        except Exception as e:
+            _logger.error(
+                'Failed to get app files from %s: %s',
+                source_path, str(e)
+            )
+            return []
+
     def _walk_directory(self, path, max_depth=10, current_depth=0):
         """
         Recursively walk directory tree in GitHub repository.

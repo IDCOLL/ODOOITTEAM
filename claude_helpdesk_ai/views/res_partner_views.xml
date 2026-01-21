@@ -10,22 +10,52 @@
                 <notebook position="inside">
                     <page string="Claude AI &amp; GitHub" name="claude_ai_github">
                         <group>
+                            <group string="Project Configuration">
+                                <field name="x_project_type" widget="radio" options="{'horizontal': false}"/>
+                            </group>
                             <group string="GitHub Configuration">
                                 <field name="x_github_repo" placeholder="https://github.com/owner/repo"/>
                                 <field name="x_github_token" widget="password"/>
                                 <field name="x_github_default_branch"/>
                                 <field name="x_github_dev_branch_prefix"/>
-                                <field name="x_github_addons_path"/>
+                                <field name="x_github_addons_path" invisible="x_project_type != 'odoo'"/>
+                                <field name="x_github_source_path" invisible="x_project_type == 'odoo'"/>
                                 <button name="action_test_github_connection"
                                         string="Test Connection"
                                         type="object"
                                         class="btn-primary"
                                         invisible="not x_github_repo"/>
                             </group>
+                        </group>
+                        <!-- Odoo Environment (visible for Odoo projects) -->
+                        <group invisible="x_project_type != 'odoo'">
                             <group string="Odoo Environment">
                                 <field name="x_odoo_version"/>
                                 <field name="x_custom_modules" placeholder="module1, module2, module3"/>
                                 <field name="x_odoo_config_notes" placeholder="Additional environment details, customizations, or architecture notes..."/>
+                            </group>
+                        </group>
+                        <!-- Custom App Configuration (visible for non-Odoo projects) -->
+                        <group invisible="x_project_type == 'odoo'">
+                            <group string="Application Configuration">
+                                <field name="x_app_framework_version" placeholder="e.g., Vue 3.4, React 18, Node 20"/>
+                                <field name="x_app_tech_stack" placeholder="e.g., Vue 3 + Pinia + Vue Router, Node.js + Express, PostgreSQL"/>
+                            </group>
+                            <group string="Architecture Details">
+                                <field name="x_app_architecture_notes" placeholder="Describe the application architecture, folder structure, key patterns used..."/>
+                            </group>
+                        </group>
+                        <group invisible="x_project_type == 'odoo'">
+                            <group string="Build Commands">
+                                <field name="x_app_build_commands" placeholder="npm install&#10;npm run dev&#10;npm run build"/>
+                            </group>
+                            <group string="Test Commands">
+                                <field name="x_app_test_commands" placeholder="npm run test&#10;npm run test:e2e"/>
+                            </group>
+                        </group>
+                        <group invisible="x_project_type == 'odoo'">
+                            <group string="Key Files/Directories">
+                                <field name="x_app_key_files" placeholder="src/components/ - Vue components&#10;src/stores/ - Pinia stores&#10;src/api/ - API client"/>
                             </group>
                         </group>
                         <group>
