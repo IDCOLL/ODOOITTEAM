@@ -15,18 +15,5 @@
                 </xpath>
             </field>
         </record>
-
-        <!-- Inherit Sale Order Tree View to show Custom Order Date -->
-        <record id="view_order_tree_custom_date" model="ir.ui.view">
-            <field name="name">sale.order.tree.custom.date</field>
-            <field name="model">sale.order</field>
-            <field name="inherit_id" ref="sale.view_quotation_tree"/>
-            <field name="arch" type="xml">
-                <!-- Add custom order date column in tree view (optional) -->
-                <xpath expr="//field[@name='date_order']" position="after">
-                    <field name="custom_order_date" optional="hide"/>
-                </xpath>
-            </field>
-        </record>
     </data>
 </odoo>
