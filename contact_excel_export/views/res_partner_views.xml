@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Add Excel Export button to contact form view -->
+        <record id="view_partner_form_excel_export" model="ir.ui.view">
+            <field name="name">res.partner.form.excel.export</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <!-- Add button in the header area -->
+                <xpath expr="//header" position="inside">
+                    <button name="action_export_contact_excel"
+                            string="Download Excel"
+                            type="object"
+                            class="btn-primary"
+                            icon="fa-file-excel-o"
+                            help="Download contact information as Excel file"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
