@@ -104,6 +104,27 @@ class HelpdeskTicket(models.Model):
         help='JSON array of all feedback submissions and re-analyses'
     )
 
+    # Clarification Request Fields
+    x_needs_clarification = fields.Boolean(
+        string='Needs Clarification',
+        default=False,
+        help='Whether Claude AI needs more information before proceeding'
+    )
+    x_clarification_questions = fields.Text(
+        string='Clarification Questions',
+        readonly=True,
+        help='Questions from Claude AI that need to be answered'
+    )
+    x_clarification_response = fields.Text(
+        string='Clarification Response',
+        help='Your answers to the clarification questions'
+    )
+    x_clarification_history = fields.Text(
+        string='Clarification History',
+        readonly=True,
+        help='JSON array of all clarification Q&A exchanges'
+    )
+
     # Computed Fields
     x_ai_analyzed = fields.Boolean(
         string='AI Analyzed',
@@ -141,6 +162,49 @@ class HelpdeskTicket(models.Model):
 
         return self._perform_claude_analysis()
 
+    def action_submit_clarification(self):
+        """Submit clarification response and re-run analysis."""
+        self.ensure_one()
+
+        if not self.x_needs_clarification:
+            raise UserError(_('No clarification is currently requested for this ticket.'))
+
+        if not self.x_clarification_response:
+            raise UserError(_(
+                'Please provide your response to the clarification questions.'
+            ))
+
+        if not self.partner_id:
+            raise UserError(_('Please assign a customer to this ticket first.'))
+
+        # Record the clarification exchange in history
+        self._record_clarification_history()
+
+        # Clear the clarification state
+        self.x_needs_clarification = False
+        self.x_clarification_response = False
+
+        # Re-run analysis with the new information
+        return self._perform_claude_analysis()
+
+    def _record_clarification_history(self):
+        """Record the current clarification Q&A exchange in history."""
+        history = []
+        if self.x_clarification_history:
+            try:
+                history = json.loads(self.x_clarification_history)
+            except (json.JSONDecodeError, TypeError):
+                history = []
+
+        # Add current exchange to history
+        history.append({
+            'date': fields.Datetime.now().isoformat(),
+            'questions': self.x_clarification_questions or '',
+            'response': self.x_clarification_response or '',
+        })
+
+        self.x_clarification_history = json.dumps(history, indent=2)
+
     def _perform_claude_analysis(self):
         """Core method to perform Claude AI analysis."""
         self.ensure_one()
@@ -170,6 +234,20 @@ class HelpdeskTicket(models.Model):
 
             # Process and store response
             self._process_claude_response(response_dict)
+
+            # Check if clarification was requested
+            if response_dict.get('needs_clarification'):
+                _logger.info('Claude AI requested clarification for ticket %s', self.id)
+                return {
+                    'type': 'ir.actions.client',
+                    'tag': 'display_notification',
+                    'params': {
+                        'title': _('Clarification Needed'),
+                        'message': _('Claude AI needs more information. Please answer the questions and submit your response.'),
+                        'type': 'warning',
+                        'sticky': True,
+                    }
+                }
 
             # Create GitHub PR if enabled and changes proposed
             if (partner.x_auto_create_pr and
@@ -1010,13 +1088,49 @@ Analysis Date: {ticket.x_analysis_date}
         if self.x_affected_module:
             parts.append(f"\nAffected Module: {self.x_affected_module}")
 
+        # Include any previous clarification Q&A
+        if self.x_clarification_history:
+            try:
+                history = json.loads(self.x_clarification_history)
+                if history:
+                    parts.append("\n# PREVIOUS CLARIFICATION EXCHANGES:")
+                    for i, exchange in enumerate(history, 1):
+                        parts.append(f"\n## Clarification {i}:")
+                        parts.append(f"Questions Asked:\n{exchange.get('questions', '')}")
+                        parts.append(f"Answers Provided:\n{exchange.get('response', '')}")
+            except (json.JSONDecodeError, TypeError):
+                pass
+
         parts.append("""
 
 # YOUR TASK
 
-Analyze this support ticket and provide a detailed solution. Return your response as valid JSON with this exact structure:
+Analyze this support ticket. You have TWO options:
+
+## OPTION 1: Request Clarification (if needed)
+If the ticket lacks essential information to provide a proper solution, you can ask for clarification.
+Return JSON with this structure:
 
 {
+    "needs_clarification": true,
+    "clarification_questions": "Your questions here. Be specific about what information you need:\\n1. Question 1\\n2. Question 2\\n3. Question 3",
+    "partial_analysis": "What you understand so far and why you need more information"
+}
+
+Use this option when:
+- The problem description is vague or unclear
+- You need specific error messages, logs, or stack traces
+- You need to know which specific feature/module/component is affected
+- The expected vs actual behavior is not clearly described
+- You need environment details (versions, configurations)
+- Steps to reproduce are missing or incomplete
+
+## OPTION 2: Provide Solution (if you have enough information)
+If you have sufficient information, provide a complete solution.
+Return JSON with this structure:
+
+{
+    "needs_clarification": false,
     "analysis": "Detailed root cause analysis of the issue",
     "solution_approach": "High-level description of the solution strategy",
     "code_changes": [
@@ -1032,14 +1146,15 @@ Analyze this support ticket and provide a detailed solution. Return your respons
     "additional_notes": "Any warnings, considerations, or follow-up items"
 }
 
-IMPORTANT:
-- Provide complete, production-ready code in the "content" field
-- Include proper error handling and logging
-- Follow Odoo best practices mentioned in the context
+IMPORTANT GUIDELINES:
+- Always include "needs_clarification" field (true or false)
+- If requesting clarification, ask specific, actionable questions
+- If providing solution, include complete, production-ready code
+- Include proper error handling and logging in code
+- Follow best practices mentioned in the context
 - If multiple files need changes, include all in the code_changes array
 - Use "modify" action for existing files, "create" for new files
 - Only propose changes that directly address the ticket issue
-- Ensure all code is compatible with the client's Odoo version
 """)
 
         return '\n'.join(parts)
@@ -1067,6 +1182,23 @@ IMPORTANT:
         """Store Claude response results in ticket fields."""
         self.x_analysis_date = fields.Datetime.now()
 
+        # Check if Claude is requesting clarification
+        if response_dict.get('needs_clarification'):
+            self.x_needs_clarification = True
+            self.x_clarification_questions = response_dict.get('clarification_questions', '')
+
+            # Store partial analysis if provided
+            partial = response_dict.get('partial_analysis', '')
+            if partial:
+                self.x_claude_analysis = self._format_clarification_html(response_dict)
+
+            # Don't set code changes or estimated hours for clarification requests
+            return
+
+        # Claude provided a solution - clear any previous clarification state
+        self.x_needs_clarification = False
+        self.x_clarification_questions = False
+
         # Store proposed changes
         if response_dict.get('code_changes'):
             self.x_proposed_changes = json.dumps(
@@ -1080,6 +1212,37 @@ IMPORTANT:
 
         # Format and store HTML analysis
         self.x_claude_analysis = self._format_analysis_html(response_dict)
+
+    def _format_clarification_html(self, response_dict):
+        """Format clarification request as HTML."""
+        html_parts = [
+            '<div style="font-family: Arial, sans-serif;">',
+            '<h2 style="color: #856404;">Clarification Needed</h2>',
+            '<div style="background: #fff3cd; border: 1px solid #ffc107; padding: 15px; border-radius: 5px; margin-bottom: 15px;">',
+            '<p><strong>Claude AI needs more information before proceeding.</strong></p>',
+            '</div>',
+        ]
+
+        if response_dict.get('partial_analysis'):
+            html_parts.append(
+                f'<h3>Initial Assessment</h3>'
+                f'<p>{self._escape_html(response_dict["partial_analysis"])}</p>'
+            )
+
+        if response_dict.get('clarification_questions'):
+            html_parts.append(
+                f'<h3>Questions</h3>'
+                f'<div style="background: #f8f9fa; padding: 15px; border-radius: 5px;">'
+                f'<p>{self._escape_html(response_dict["clarification_questions"])}</p>'
+                f'</div>'
+            )
+
+        html_parts.append(
+            '<p style="margin-top: 15px;"><em>Please answer the questions above in the "Clarification Response" field below, then click "Submit Clarification".</em></p>'
+        )
+        html_parts.append('</div>')
+
+        return ''.join(html_parts)
 
     def _format_analysis_html(self, response_dict):
         """Format analysis results as HTML."""

@@ -13,12 +13,17 @@
                             string="Analyze with Claude AI"
                             type="object"
                             class="btn-primary"
-                            invisible="x_ai_analyzed"/>
+                            invisible="x_ai_analyzed or x_needs_clarification"/>
+                    <button name="action_submit_clarification"
+                            string="Submit Clarification"
+                            type="object"
+                            class="btn-warning"
+                            invisible="not x_needs_clarification"/>
                     <button name="action_create_github_pr"
                             string="Create GitHub PR"
                             type="object"
                             class="btn-secondary"
-                            invisible="not x_ai_analyzed or x_github_pr_url or not x_proposed_changes"/>
+                            invisible="not x_ai_analyzed or x_github_pr_url or not x_proposed_changes or x_needs_clarification"/>
                     <button name="action_open_github_pr"
                             string="Open Pull Request"
                             type="object"
@@ -28,18 +33,44 @@
                             string="Fix Working"
                             type="object"
                             class="btn-success"
-                            invisible="not x_ai_analyzed or x_feedback_status == 'working'"/>
+                            invisible="not x_ai_analyzed or x_feedback_status == 'working' or x_needs_clarification"/>
                     <button name="action_reanalyze_with_feedback"
                             string="Re-analyze with Feedback"
                             type="object"
                             class="btn-warning"
-                            invisible="not x_ai_analyzed or not x_feedback_text or x_feedback_status not in ('not_working', 'partial')"/>
+                            invisible="not x_ai_analyzed or not x_feedback_text or x_feedback_status not in ('not_working', 'partial') or x_needs_clarification"/>
                 </header>
 
                 <!-- Add notebook pages -->
                 <xpath expr="//notebook" position="inside">
+                    <!-- Clarification Request page (shown when Claude needs info) -->
+                    <page string="Clarification Needed" name="clarification" invisible="not x_needs_clarification">
+                        <div class="alert alert-warning" role="alert">
+                            <h4 class="alert-heading">Claude AI needs more information</h4>
+                            <p>Please answer the questions below so Claude can provide an accurate solution.</p>
+                        </div>
+                        <group>
+                            <field name="x_claude_analysis" nolabel="1" readonly="1"/>
+                        </group>
+                        <separator string="Your Response"/>
+                        <group>
+                            <field name="x_clarification_response"
+                                   placeholder="Please answer the questions above here. Be as specific as possible..."
+                                   nolabel="1"/>
+                        </group>
+                        <group>
+                            <button name="action_submit_clarification"
+                                    string="Submit Clarification and Continue Analysis"
+                                    type="object"
+                                    class="btn-warning btn-lg"/>
+                        </group>
+                        <group string="Clarification History" invisible="not x_clarification_history">
+                            <field name="x_clarification_history" nolabel="1" readonly="1"/>
+                        </group>
+                    </page>
+
                     <!-- AI Analysis & Code page -->
-                    <page string="AI Analysis &amp; Code" name="ai_analysis" invisible="not x_ai_analyzed">
+                    <page string="AI Analysis &amp; Code" name="ai_analysis" invisible="not x_ai_analyzed or x_needs_clarification">
                         <group>
                             <group string="Analysis Information">
                                 <field name="x_analysis_date"/>
@@ -56,7 +87,7 @@
                         <group>
                             <field name="x_claude_analysis" nolabel="1"/>
                         </group>
-                        <group string="Proposed Code Changes">
+                        <group string="Proposed Code Changes" invisible="not x_proposed_changes">
                             <field name="x_proposed_changes" nolabel="1"/>
                         </group>
                         <separator string="Feedback on AI Solution"/>
@@ -80,6 +111,9 @@
                         </group>
                         <group string="Feedback History" invisible="not x_feedback_history">
                             <field name="x_feedback_history" nolabel="1" readonly="1"/>
+                        </group>
+                        <group string="Clarification History" invisible="not x_clarification_history">
+                            <field name="x_clarification_history" nolabel="1" readonly="1"/>
                         </group>
                         <group string="Full API Response (Debug)">
                             <field name="x_claude_analysis_json" nolabel="1"/>
@@ -107,6 +141,7 @@
                 <xpath expr="//list" position="inside">
                     <field name="x_ai_analyzed" optional="show"/>
                     <field name="x_pr_created" optional="show"/>
+                    <field name="x_needs_clarification" optional="show"/>
                     <field name="x_feedback_status" optional="hide"/>
                     <field name="x_reanalysis_count" optional="hide"/>
                 </xpath>
@@ -126,6 +161,8 @@
                             domain="[('x_pr_created', '=', True)]"/>
                     <filter string="Not Analyzed" name="filter_not_analyzed"
                             domain="[('x_ai_analyzed', '=', False)]"/>
+                    <filter string="Needs Clarification" name="filter_needs_clarification"
+                            domain="[('x_needs_clarification', '=', True)]"/>
                     <separator/>
                     <filter string="Fix Working" name="filter_fix_working"
                             domain="[('x_feedback_status', '=', 'working')]"/>
