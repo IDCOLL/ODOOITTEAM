@@ -5,7 +5,7 @@
         <menuitem id="menu_claude_ai_config"
                   name="Claude AI Configuration"
                   parent="helpdesk.helpdesk_menu_config"
-                  action="base.action_partner_form"
+                  action="action_claude_ai_config"
                   sequence="100"/>
     </data>
 </odoo>
