@@ -722,3 +722,67 @@ IMPORTANT:
             'url': self.x_github_pr_url,
             'target': 'new',
         }
+
+    def action_create_github_pr(self):
+        """Manually create GitHub PR from analyzed ticket."""
+        self.ensure_one()
+
+        if not self.x_ai_analyzed:
+            raise UserError(_('Please analyze the ticket with Claude AI first.'))
+
+        if self.x_github_pr_url:
+            raise UserError(_('A pull request already exists for this ticket.'))
+
+        if not self.x_proposed_changes:
+            raise UserError(_('No code changes were proposed in the analysis.'))
+
+        partner = self.partner_id
+        if not partner:
+            raise UserError(_('No customer assigned to this ticket.'))
+
+        if not partner.x_github_repo or not partner.x_github_token:
+            raise UserError(_('GitHub repository and token must be configured for the customer.'))
+
+        # Parse the proposed changes
+        try:
+            response_dict = {'code_changes': json.loads(self.x_proposed_changes)}
+        except (json.JSONDecodeError, TypeError):
+            raise UserError(_('Could not parse proposed code changes. Please re-analyze the ticket.'))
+
+        if not response_dict.get('code_changes'):
+            raise UserError(_('No valid code changes found in the analysis.'))
+
+        # Add analysis info to response dict for PR description
+        if self.x_claude_analysis_json:
+            try:
+                full_response = json.loads(self.x_claude_analysis_json)
+                response_dict.update({
+                    'analysis': full_response.get('analysis', ''),
+                    'solution_approach': full_response.get('solution_approach', ''),
+                    'testing_steps': full_response.get('testing_steps', ''),
+                    'additional_notes': full_response.get('additional_notes', ''),
+                })
+            except (json.JSONDecodeError, TypeError):
+                pass
+
+        # Create the GitHub solution
+        self._create_github_solution(response_dict)
+
+        if self.x_github_pr_url:
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Success'),
+                    'message': _('Pull request created successfully!'),
+                    'type': 'success',
+                    'sticky': False,
+                    'next': {
+                        'type': 'ir.actions.act_url',
+                        'url': self.x_github_pr_url,
+                        'target': 'new',
+                    }
+                }
+            }
+        else:
+            raise UserError(_('Failed to create pull request. Check the logs for details.'))

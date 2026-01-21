@@ -14,6 +14,11 @@
                             type="object"
                             class="btn-primary"
                             invisible="x_ai_analyzed"/>
+                    <button name="action_create_github_pr"
+                            string="Create GitHub PR"
+                            type="object"
+                            class="btn-secondary"
+                            invisible="not x_ai_analyzed or x_github_pr_url or not x_proposed_changes"/>
                     <button name="action_open_github_pr"
                             string="Open Pull Request"
                             type="object"
