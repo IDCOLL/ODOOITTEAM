@@ -395,6 +395,33 @@ Your task is to analyze support tickets and provide detailed solutions with code
 - Use <section class="oe_container"> as the root elements
 - Use <br/> for self-closing tags (XHTML style)
 - Avoid special characters like & (use 'and' instead) or encode them properly
+
+## View Inheritance - CRITICAL Knowledge
+Different Odoo models have different view structures. Know which elements exist before using xpath:
+
+### Views WITH <header> element (have status bar/workflow buttons):
+- sale.order, purchase.order, account.move (invoices)
+- helpdesk.ticket, project.task, crm.lead
+- stock.picking, mrp.production
+- hr.expense, hr.leave
+
+### Views WITHOUT <header> element:
+- res.partner (contacts) - use //div[hasclass('oe_button_box')] or //sheet instead
+- res.users - use //sheet
+- product.template, product.product - use //div[hasclass('oe_button_box')]
+- res.company - no header
+
+### Safe xpath targets that exist in most form views:
+- //sheet - the main content area
+- //div[hasclass('oe_button_box')] - smart buttons area (top right)
+- //notebook - tab container (if present)
+- //group - field groupings
+- //field[@name='specific_field'] - target specific existing fields
+
+### ALWAYS verify before using xpath:
+1. Check the code context provided to see the actual view structure
+2. If unsure, ask for clarification about available elements
+3. Never assume a view has elements just because other views do
 """
 
     def _get_vue_guidelines(self):
@@ -1155,6 +1182,42 @@ IMPORTANT GUIDELINES:
 - If multiple files need changes, include all in the code_changes array
 - Use "modify" action for existing files, "create" for new files
 - Only propose changes that directly address the ticket issue
+
+## CRITICAL: VALIDATION REQUIREMENTS
+
+Before proposing any code changes, you MUST verify that referenced elements exist:
+
+### For Odoo XML Views:
+1. **XPath expressions**: Only use xpath expressions that target elements that ACTUALLY EXIST in the parent view:
+   - `//header` - ONLY exists in views with status bar (sale.order, helpdesk.ticket, etc.) - NOT in res.partner form
+   - `//div[hasclass('oe_button_box')]` - exists in most form views with smart buttons
+   - `//sheet` - exists in most form views
+   - `//notebook` - only if the parent view has a notebook element
+   - `//field[@name='field_name']` - only if that field exists in the parent view
+
+2. **Common mistakes to AVOID**:
+   - Do NOT use `//header` on res.partner form view (it doesn't have one)
+   - Do NOT reference fields that don't exist on the model
+   - Do NOT use xpath on elements that are not in the inherited view
+
+3. **When unsure about view structure**: Request clarification asking for the current view XML structure
+
+### For Odoo Python Models:
+1. **Field references**: Only reference fields that exist on the model or its parent models
+2. **Method calls**: Verify methods exist before calling them (e.g., ensure_one(), search(), etc.)
+3. **Inheritance**: When using _inherit, verify the parent model exists and has the expected fields
+
+### For Any Framework:
+1. **Imports**: Only import modules/components that exist in the project
+2. **API calls**: Verify endpoint paths and method signatures match the existing codebase
+3. **File paths**: Use paths that match the project's actual directory structure
+
+### If you cannot verify an element exists:
+- Ask for clarification about the current structure
+- Request the user to provide the existing file/view content
+- Do NOT assume or guess about structure
+
+REMEMBER: It's better to ask for clarification than to propose changes that will fail because they reference non-existent elements.
 """)
 
         return '\n'.join(parts)
