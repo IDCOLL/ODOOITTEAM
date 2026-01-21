@@ -20,7 +20,7 @@
                                         string="Test Connection"
                                         type="object"
                                         class="btn-primary"
-                                        attrs="{'invisible': [('x_github_repo', '=', False)]}"/>
+                                        invisible="not x_github_repo"/>
                             </group>
                             <group string="Odoo Environment">
                                 <field name="x_odoo_version"/>
@@ -40,7 +40,7 @@
                                         string="View Analyzed Tickets"
                                         type="object"
                                         class="btn-link"
-                                        attrs="{'invisible': [('x_total_tickets_analyzed', '=', 0)]}"/>
+                                        invisible="x_total_tickets_analyzed == 0"/>
                                 <button name="action_refresh_cache"
                                         string="Refresh Statistics"
                                         type="object"

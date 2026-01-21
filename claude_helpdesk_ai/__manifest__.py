@@ -3,7 +3,7 @@
 
 {
     'name': 'Claude AI Helpdesk Automation',
-    'version': '1.0.1',
+    'version': '1.0.2',
     'category': 'Helpdesk',
     'summary': 'Integrate Claude AI with Odoo Helpdesk for automated ticket analysis and GitHub PR creation',
     'description': """

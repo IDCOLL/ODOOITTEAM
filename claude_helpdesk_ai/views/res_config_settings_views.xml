@@ -8,32 +8,17 @@
             <field name="inherit_id" ref="base.res_config_settings_view_form"/>
             <field name="arch" type="xml">
                 <xpath expr="//form" position="inside">
-                    <app data-string="Claude AI" string="Claude AI" name="claude_helpdesk_ai" groups="base.group_system">
-                        <block title="Claude API Configuration">
-                            <setting string="API Key" help="Your Anthropic Claude API key for AI-powered ticket analysis">
-                                <field name="claude_api_key" widget="password"/>
-                                <div class="text-muted">
-                                    Get your API key from <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
-                                </div>
-                            </setting>
-                            <setting string="Model" help="The Claude model to use for analysis">
-                                <field name="claude_model"/>
-                            </setting>
-                            <setting string="Max Tokens" help="Maximum tokens for API responses">
-                                <field name="claude_max_tokens"/>
-                            </setting>
-                        </block>
-                        <block title="Customer Configuration">
-                            <div class="text-muted mt16 mb16">
-                                Configure GitHub repositories and AI settings per customer in the Contact form under the "Claude AI &amp; GitHub" tab.
-                            </div>
-                            <button name="%(base.action_partner_form)d"
-                                    string="Configure Customers"
-                                    type="action"
-                                    class="btn-primary"
-                                    icon="fa-users"/>
-                        </block>
-                    </app>
+                    <setting class="col-12 col-lg-6 o_setting_box" id="claude_ai_settings" string="Claude AI" groups="base.group_system">
+                        <field name="claude_api_key" widget="password" placeholder="Enter your Claude API key..."/>
+                        <div class="text-muted">
+                            Get your API key from <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>
+                        </div>
+                        <field name="claude_model" placeholder="claude-sonnet-4-20250514"/>
+                        <field name="claude_max_tokens"/>
+                        <div class="mt16">
+                            <span class="text-muted">Configure GitHub repositories per customer in the Contact form under the "Claude AI &amp; GitHub" tab.</span>
+                        </div>
+                    </setting>
                 </xpath>
             </field>
         </record>
@@ -43,7 +28,7 @@
             <field name="name">Claude AI Settings</field>
             <field name="res_model">res.config.settings</field>
             <field name="view_mode">form</field>
-            <field name="target">inline</field>
+            <field name="target">current</field>
             <field name="context">{'module': 'claude_helpdesk_ai'}</field>
         </record>
     </data>

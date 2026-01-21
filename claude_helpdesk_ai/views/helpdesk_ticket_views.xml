@@ -13,18 +13,18 @@
                             string="Analyze with Claude AI"
                             type="object"
                             class="btn-primary"
-                            attrs="{'invisible': [('x_ai_analyzed', '=', True)]}"/>
+                            invisible="x_ai_analyzed"/>
                     <button name="action_open_github_pr"
                             string="Open Pull Request"
                             type="object"
                             class="btn-info"
-                            attrs="{'invisible': [('x_github_pr_url', '=', False)]}"/>
+                            invisible="not x_github_pr_url"/>
                 </header>
 
                 <!-- Add notebook pages -->
                 <xpath expr="//notebook" position="inside">
                     <!-- AI Analysis & Code page -->
-                    <page string="AI Analysis &amp; Code" name="ai_analysis" attrs="{'invisible': [('x_ai_analyzed', '=', False)]}">
+                    <page string="AI Analysis &amp; Code" name="ai_analysis" invisible="not x_ai_analyzed">
                         <group>
                             <group string="Analysis Information">
                                 <field name="x_analysis_date"/>
@@ -66,10 +66,10 @@
             <field name="model">helpdesk.ticket</field>
             <field name="inherit_id" ref="helpdesk.helpdesk_tickets_view_tree"/>
             <field name="arch" type="xml">
-                <tree position="inside">
-                    <field name="x_ai_analyzed" widget="boolean_toggle" optional="show"/>
-                    <field name="x_pr_created" widget="boolean_toggle" optional="show"/>
-                </tree>
+                <xpath expr="//list" position="inside">
+                    <field name="x_ai_analyzed" optional="show"/>
+                    <field name="x_pr_created" optional="show"/>
+                </xpath>
             </field>
         </record>
 
