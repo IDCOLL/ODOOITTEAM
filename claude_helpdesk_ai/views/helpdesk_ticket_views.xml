@@ -41,10 +41,10 @@
                             <field name="x_claude_analysis" nolabel="1"/>
                         </group>
                         <group string="Proposed Code Changes">
-                            <field name="x_proposed_changes" widget="ace" options="{'mode': 'json'}" nolabel="1"/>
+                            <field name="x_proposed_changes" nolabel="1"/>
                         </group>
                         <group string="Full API Response (Debug)">
-                            <field name="x_claude_analysis_json" widget="ace" options="{'mode': 'json'}" nolabel="1"/>
+                            <field name="x_claude_analysis_json" nolabel="1"/>
                         </group>
                     </page>
 

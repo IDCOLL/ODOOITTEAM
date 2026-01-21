@@ -41,7 +41,6 @@
         'base',
         'helpdesk',
         'mail',
-        'web_editor',
     ],
     'external_dependencies': {
         'python': ['anthropic', 'requests'],
