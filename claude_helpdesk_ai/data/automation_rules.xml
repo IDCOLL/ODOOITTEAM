@@ -14,9 +14,7 @@ for record in records:
         record._perform_claude_analysis()
     except Exception as e:
         # Log error but don't block ticket creation
-        import logging
-        _logger = logging.getLogger(__name__)
-        _logger.error('Auto-analysis failed for ticket %s: %s', record.id, str(e))
+        log('Auto-analysis failed for ticket %s: %s' % (record.id, str(e)), level='error')
             </field>
         </record>
 
@@ -35,9 +33,7 @@ for record in records:
         record._perform_claude_analysis()
     except Exception as e:
         # Log error but don't block ticket creation
-        import logging
-        _logger = logging.getLogger(__name__)
-        _logger.error('Auto-analysis failed for ticket %s: %s', record.id, str(e))
+        log('Auto-analysis failed for ticket %s: %s' % (record.id, str(e)), level='error')
             </field>
         </record>
     </data>
