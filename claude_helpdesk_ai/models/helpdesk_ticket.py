@@ -1679,6 +1679,11 @@ REMEMBER: It's better to ask for clarification than to propose changes that will
             ))
 
         try:
+            # Clean up old GitHub branch and PR before re-analysis
+            if self.x_github_branch:
+                _logger.info('Cleaning up old branch %s before re-analysis', self.x_github_branch)
+                self._cleanup_github_branch_and_pr()
+
             # Build cached context (universal + client-specific)
             cached_context = self._build_cached_prompt()
 
@@ -1694,11 +1699,6 @@ REMEMBER: It's better to ask for clarification than to propose changes that will
             # Clear feedback text for next iteration (status remains)
             self.x_feedback_text = False
 
-            # Reset GitHub PR fields for new solution
-            self.x_github_branch = False
-            self.x_github_pr_url = False
-            self.x_github_pr_number = False
-
             _logger.info('Claude AI re-analysis completed for ticket %s', self.id)
 
             return {
@@ -1706,7 +1706,7 @@ REMEMBER: It's better to ask for clarification than to propose changes that will
                 'tag': 'display_notification',
                 'params': {
                     'title': _('Re-analysis Complete'),
-                    'message': _('Claude AI has provided an updated solution based on your feedback.'),
+                    'message': _('Claude AI has provided an updated solution based on your feedback. The previous branch/PR has been cleaned up.'),
                     'type': 'success',
                     'sticky': False,
                 }
@@ -1909,3 +1909,141 @@ Return your response as valid JSON with this exact structure:
                 'sticky': False,
             }
         }
+
+    def action_delete_ai_branch(self):
+        """Delete the AI-created branch and close the associated PR."""
+        self.ensure_one()
+
+        if not self.x_github_branch:
+            raise UserError(_('No AI branch exists for this ticket.'))
+
+        partner = self.partner_id
+        if not partner or not partner.x_github_repo or not partner.x_github_token:
+            raise UserError(_('GitHub configuration is missing for this customer.'))
+
+        try:
+            self._cleanup_github_branch_and_pr()
+
+            return {
+                'type': 'ir.actions.client',
+                'tag': 'display_notification',
+                'params': {
+                    'title': _('Branch Deleted'),
+                    'message': _('The AI branch and associated PR have been deleted successfully.'),
+                    'type': 'success',
+                    'sticky': False,
+                }
+            }
+
+        except Exception as e:
+            _logger.error(
+                'Failed to delete AI branch for ticket %s: %s',
+                self.id, str(e), exc_info=True
+            )
+            raise UserError(_(
+                'Failed to delete branch: %s\n\n'
+                'The branch may have been manually deleted or merged.'
+            ) % str(e))
+
+    def _cleanup_github_branch_and_pr(self):
+        """Clean up GitHub branch and PR before re-analysis."""
+        partner = self.partner_id
+        if not partner or not partner.x_github_repo or not partner.x_github_token:
+            return
+
+        if not self.x_github_branch:
+            return
+
+        branch_name = self.x_github_branch
+
+        # Safety check: Only delete branches that match the AI branch pattern
+        # This prevents accidental deletion of important branches like main, master, develop, etc.
+        branch_prefix = partner.x_github_dev_branch_prefix or 'ai-fix/'
+        protected_branches = ['main', 'master', 'develop', 'staging', 'production', 'prod', 'dev']
+
+        # Check if branch name is a protected branch
+        if branch_name.lower() in protected_branches:
+            _logger.error(
+                'SAFETY: Refusing to delete protected branch %s for ticket %s',
+                branch_name, self.id
+            )
+            raise UserError(_(
+                'Cannot delete protected branch "%s". '
+                'Only AI-created branches can be deleted.'
+            ) % branch_name)
+
+        # Check if branch name starts with the expected AI prefix or contains ticket reference
+        is_ai_branch = (
+            branch_name.startswith(branch_prefix) or
+            f'ticket-{self.id}' in branch_name.lower() or
+            branch_name.startswith('ai-fix/') or
+            branch_name.startswith('ai-') or
+            f'-{self.id}-' in branch_name
+        )
+
+        if not is_ai_branch:
+            _logger.error(
+                'SAFETY: Branch %s does not appear to be an AI-created branch for ticket %s',
+                branch_name, self.id
+            )
+            raise UserError(_(
+                'Cannot delete branch "%s". '
+                'This branch does not appear to be created by Claude AI. '
+                'Expected prefix: "%s"'
+            ) % (branch_name, branch_prefix))
+
+        _logger.info(
+            'Safety check passed: Branch %s is an AI branch (prefix: %s, ticket: %s)',
+            branch_name, branch_prefix, self.id
+        )
+
+        try:
+            from odoo.addons.claude_helpdesk_ai.lib.github_integration import GitHubIntegration
+
+            github = GitHubIntegration(partner.x_github_repo, partner.x_github_token)
+
+            # Close PR first if it exists (required before deleting branch)
+            if self.x_github_pr_number:
+                try:
+                    github.close_pull_request(self.x_github_pr_number)
+                    _logger.info(
+                        'Closed PR #%s for ticket %s',
+                        self.x_github_pr_number, self.id
+                    )
+                except Exception as e:
+                    _logger.warning(
+                        'Could not close PR #%s (may already be closed/merged): %s',
+                        self.x_github_pr_number, str(e)
+                    )
+
+            # Delete the branch
+            branch_name = self.x_github_branch
+            try:
+                if github.branch_exists(branch_name):
+                    github.delete_branch(branch_name)
+                    _logger.info(
+                        'Deleted branch %s for ticket %s',
+                        branch_name, self.id
+                    )
+                else:
+                    _logger.info(
+                        'Branch %s does not exist (already deleted or merged)',
+                        branch_name
+                    )
+            except Exception as e:
+                _logger.warning(
+                    'Could not delete branch %s (may already be deleted): %s',
+                    branch_name, str(e)
+                )
+
+            # Clear the GitHub fields
+            self.x_github_branch = False
+            self.x_github_pr_url = False
+            self.x_github_pr_number = False
+
+        except Exception as e:
+            _logger.error(
+                'Failed to cleanup GitHub branch/PR for ticket %s: %s',
+                self.id, str(e), exc_info=True
+            )
+            # Don't raise - cleanup failures shouldn't block re-analysis

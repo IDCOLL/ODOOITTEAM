@@ -75,6 +75,9 @@ _perform_claude_analysis()
   - `get_markdown_files()` - Fetches `.md` documentation files from repository
   - `get_repository_files()` - Scans entire repository for relevant source files
   - `_walk_directory()` - Recursive directory traversal
+  - `delete_branch()` - Deletes a branch from the repository
+  - `close_pull_request()` - Closes a PR without merging
+  - `branch_exists()` - Checks if a branch exists
 
 **Views (UI):**
 - `views/helpdesk_ticket_views.xml` - Ticket form buttons and tabs
@@ -88,6 +91,16 @@ _perform_claude_analysis()
 4. **Call Claude API** → With prompt caching (system context cached for 5 min)
 5. **Process Response** → Either clarification request or solution with code changes
 6. **Optional PR Creation** → Create branch, commit files, open PR
+
+### Re-analysis Workflow
+
+When a fix doesn't work, users can provide feedback and request re-analysis:
+1. **Submit Feedback** → User marks fix as "Not Working" or "Partial" with explanation
+2. **Re-analyze with Feedback** → `action_reanalyze_with_feedback()`
+   - Automatically closes the existing PR and deletes the AI branch
+   - Calls Claude API with previous analysis and user feedback
+   - Creates a new branch/PR with the revised solution
+3. **Manual Branch Deletion** → `action_delete_ai_branch()` allows manual cleanup
 
 ### Repository Scanning
 

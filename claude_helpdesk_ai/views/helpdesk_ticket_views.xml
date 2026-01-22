@@ -29,6 +29,12 @@
                             type="object"
                             class="btn-info"
                             invisible="not x_github_pr_url"/>
+                    <button name="action_delete_ai_branch"
+                            string="Delete AI Branch"
+                            type="object"
+                            class="btn-danger"
+                            confirm="This will close the PR and delete the AI branch. Are you sure?"
+                            invisible="not x_github_branch"/>
                     <button name="action_mark_fix_working"
                             string="Fix Working"
                             type="object"

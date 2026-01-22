@@ -647,3 +647,61 @@ class GitHubIntegration:
         except Exception as e:
             _logger.error('Failed to create pull request: %s', str(e))
             raise
+
+    def close_pull_request(self, pr_number):
+        """
+        Close a pull request without merging.
+
+        :param pr_number: Pull request number
+        :return: Updated pull request data
+        """
+        try:
+            endpoint = f'/repos/{self.owner}/{self.repo}/pulls/{pr_number}'
+
+            payload = {
+                'state': 'closed'
+            }
+
+            result = self._make_request('PATCH', endpoint, json=payload)
+
+            _logger.info('Closed pull request #%s', pr_number)
+
+            return result
+
+        except Exception as e:
+            _logger.error('Failed to close pull request #%s: %s', pr_number, str(e))
+            raise
+
+    def delete_branch(self, branch_name):
+        """
+        Delete a branch from the repository.
+
+        :param branch_name: Name of the branch to delete
+        :return: True if successful
+        """
+        try:
+            endpoint = f'/repos/{self.owner}/{self.repo}/git/refs/heads/{branch_name}'
+
+            self._make_request('DELETE', endpoint)
+
+            _logger.info('Deleted branch %s', branch_name)
+
+            return True
+
+        except Exception as e:
+            _logger.error('Failed to delete branch %s: %s', branch_name, str(e))
+            raise
+
+    def branch_exists(self, branch_name):
+        """
+        Check if a branch exists in the repository.
+
+        :param branch_name: Name of the branch to check
+        :return: True if branch exists, False otherwise
+        """
+        try:
+            endpoint = f'/repos/{self.owner}/{self.repo}/git/ref/heads/{branch_name}'
+            self._make_request('GET', endpoint)
+            return True
+        except Exception:
+            return False
