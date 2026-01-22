@@ -18,8 +18,6 @@
                                 <field name="x_github_token" widget="password"/>
                                 <field name="x_github_default_branch"/>
                                 <field name="x_github_dev_branch_prefix"/>
-                                <field name="x_github_addons_path" invisible="x_project_type != 'odoo'"/>
-                                <field name="x_github_source_path" invisible="x_project_type == 'odoo'"/>
                                 <button name="action_test_github_connection"
                                         string="Test Connection"
                                         type="object"

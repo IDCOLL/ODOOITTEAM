@@ -357,6 +357,180 @@ class GitHubIntegration:
             _logger.error('Failed to walk directory %s: %s', path, str(e))
             return []
 
+    def get_markdown_files(self, branch='main', max_files=5):
+        """
+        Get markdown files from repository root and common documentation locations.
+
+        :param branch: Branch to read from
+        :param max_files: Maximum number of markdown files to fetch
+        :return: List of file dictionaries with path and content
+        """
+        md_files = []
+        priority_names = [
+            'CLAUDE.md', 'README.md', 'CONTRIBUTING.md', 'ARCHITECTURE.md',
+            'DEVELOPMENT.md', 'SETUP.md', 'INSTALL.md', 'CHANGELOG.md'
+        ]
+
+        try:
+            # Get root directory contents
+            root_contents = self.get_repo_structure('')
+            if not root_contents:
+                return []
+
+            # Find markdown files in root
+            root_md_files = []
+            for item in root_contents:
+                if item['type'] == 'file' and item['name'].lower().endswith('.md'):
+                    root_md_files.append(item)
+
+            # Sort by priority (CLAUDE.md and README.md first)
+            def md_priority(file_info):
+                name = file_info['name']
+                for i, priority_name in enumerate(priority_names):
+                    if name.lower() == priority_name.lower():
+                        return i
+                return len(priority_names)
+
+            root_md_files.sort(key=md_priority)
+
+            # Fetch content for markdown files
+            for file_info in root_md_files[:max_files]:
+                try:
+                    content = self.get_file_content(file_info['path'], branch=branch)
+                    if content:
+                        md_files.append({
+                            'path': file_info['path'],
+                            'name': file_info['name'],
+                            'content': content,
+                        })
+                except Exception as e:
+                    _logger.warning(
+                        'Failed to fetch markdown file %s: %s',
+                        file_info['path'], str(e)
+                    )
+                    continue
+
+            # Also check docs/ directory if it exists
+            for item in root_contents:
+                if item['type'] == 'dir' and item['name'].lower() in ('docs', 'doc', 'documentation'):
+                    try:
+                        docs_contents = self.get_repo_structure(item['path'])
+                        if docs_contents:
+                            for doc_item in docs_contents:
+                                if (doc_item['type'] == 'file' and
+                                    doc_item['name'].lower().endswith('.md') and
+                                    len(md_files) < max_files):
+                                    try:
+                                        content = self.get_file_content(doc_item['path'], branch=branch)
+                                        if content:
+                                            md_files.append({
+                                                'path': doc_item['path'],
+                                                'name': doc_item['name'],
+                                                'content': content,
+                                            })
+                                    except Exception:
+                                        continue
+                    except Exception:
+                        continue
+
+            _logger.info('Fetched %d markdown files from repository', len(md_files))
+            return md_files
+
+        except Exception as e:
+            _logger.error('Failed to get markdown files: %s', str(e))
+            return []
+
+    def get_repository_files(self, file_extensions=None, max_files=30, branch='main'):
+        """
+        Get all relevant files from entire repository.
+
+        :param file_extensions: List of file extensions to include
+        :param max_files: Maximum number of files to fetch
+        :param branch: Branch to read from
+        :return: List of file dictionaries with path and content
+        """
+        if file_extensions is None:
+            file_extensions = ['.py', '.xml', '.csv', '.ts', '.js', '.vue', '.tsx', '.jsx', '.json']
+
+        try:
+            # Walk entire repository from root
+            all_files = self._walk_directory('')
+
+            # Filter for relevant file types
+            relevant_files = []
+            priority_patterns = [
+                # Config files
+                'package.json', 'tsconfig.json', 'vite.config', 'webpack.config',
+                'requirements.txt', 'pyproject.toml', 'setup.py', 'setup.cfg',
+                '__manifest__.py', '__openerp__.py',
+                # Entry points
+                'main.ts', 'main.js', 'main.py', 'app.ts', 'app.js', 'app.py',
+                'index.ts', 'index.js', 'App.vue', 'App.tsx', 'App.jsx',
+                # Key patterns
+                'router', 'store', 'api', 'service', 'composable', 'hook',
+                'models/', 'views/', 'controllers/', 'wizard/',
+            ]
+
+            # Skip common non-essential directories
+            skip_patterns = [
+                'node_modules', '__pycache__', '.git', 'dist', 'build',
+                '.cache', 'coverage', '.nyc_output', '.venv', 'venv',
+                '.tox', '.pytest_cache', '.mypy_cache', 'htmlcov',
+                'static/lib', 'static/src/lib',  # External libraries in Odoo
+            ]
+
+            for file_info in all_files:
+                file_path = file_info['path']
+
+                # Skip non-essential directories
+                if any(pattern in file_path for pattern in skip_patterns):
+                    continue
+
+                # Check extension
+                if any(file_path.endswith(ext) for ext in file_extensions):
+                    relevant_files.append(file_info)
+
+            # Sort by priority
+            def file_priority(file_info):
+                path = file_info['path'].lower()
+                for i, pattern in enumerate(priority_patterns):
+                    if pattern.lower() in path:
+                        return i
+                return len(priority_patterns)
+
+            relevant_files.sort(key=file_priority)
+            relevant_files = relevant_files[:max_files]
+
+            # Fetch content for selected files
+            result_files = []
+            for file_info in relevant_files:
+                try:
+                    content = self.get_file_content(file_info['path'], branch=branch)
+                    if content:
+                        # Truncate very large files
+                        if len(content) > 10000:
+                            content = content[:10000] + '\n\n... (truncated - file too large)'
+
+                        result_files.append({
+                            'path': file_info['path'],
+                            'name': file_info['name'],
+                            'type': file_info['type'],
+                            'content': content,
+                        })
+                except Exception as e:
+                    _logger.warning(
+                        'Failed to fetch content for %s: %s',
+                        file_info['path'], str(e)
+                    )
+                    continue
+
+            _logger.info('Fetched %d files from repository', len(result_files))
+            return result_files
+
+        except Exception as e:
+            _logger.error('Failed to get repository files: %s', str(e))
+            return []
+
     def create_branch(self, branch_name, from_branch='main'):
         """
         Create a new branch from an existing branch.

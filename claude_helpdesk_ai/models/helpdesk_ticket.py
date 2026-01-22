@@ -829,16 +829,30 @@ Different Odoo models have different view structures. Know which elements exist 
             return ""
 
         project_type = partner.x_project_type or 'odoo'
+        branch = partner.x_github_default_branch or 'main'
 
         try:
             from odoo.addons.claude_helpdesk_ai.lib.github_integration import GitHubIntegration
 
             github = GitHubIntegration(partner.x_github_repo, partner.x_github_token)
 
+            code_parts = []
+
+            # First, fetch markdown files (documentation) from the repository
+            md_context = self._fetch_markdown_files(github, branch)
+            if md_context:
+                code_parts.append(md_context)
+
+            # Then fetch code files based on project type
             if project_type == 'odoo':
-                return self._fetch_odoo_module_code(github)
+                code_context = self._fetch_odoo_module_code(github, branch)
             else:
-                return self._fetch_custom_app_code(github)
+                code_context = self._fetch_custom_app_code(github, branch)
+
+            if code_context:
+                code_parts.append(code_context)
+
+            return '\n\n'.join(code_parts)
 
         except Exception as e:
             _logger.error(
@@ -847,67 +861,102 @@ Different Odoo models have different view structures. Know which elements exist 
             )
             return ""
 
-    def _fetch_odoo_module_code(self, github):
-        """Fetch Odoo module code from GitHub."""
-        partner = self.partner_id
+    def _fetch_markdown_files(self, github, branch='main'):
+        """Fetch markdown documentation files from repository."""
+        try:
+            md_files = github.get_markdown_files(branch=branch, max_files=5)
 
-        # Detect affected module from ticket
-        module_name = self._detect_affected_module()
-        if not module_name:
-            _logger.info('No module detected for ticket %s', self.id)
+            if not md_files:
+                return ""
+
+            md_parts = ["## Repository Documentation\n"]
+
+            for file_info in md_files:
+                file_path = file_info['path']
+                content = file_info.get('content', '')
+
+                if content:
+                    # Truncate very large markdown files
+                    if len(content) > 5000:
+                        content = content[:5000] + '\n\n... (truncated)'
+
+                    md_parts.append(f"\n### {file_path}\n```markdown\n{content}\n```")
+
+            _logger.info('Fetched %d markdown files for ticket %s', len(md_files), self.id)
+            return '\n'.join(md_parts)
+
+        except Exception as e:
+            _logger.warning('Failed to fetch markdown files: %s', str(e))
             return ""
 
-        # Fetch module files
-        module_files = github.get_odoo_module_files(
-            module_name,
-            partner.x_github_addons_path or 'addons'
+    def _fetch_odoo_module_code(self, github, branch='main'):
+        """Fetch Odoo module code from GitHub by scanning the entire repository."""
+        partner = self.partner_id
+
+        # Detect affected module from ticket (optional - used to prioritize files)
+        module_name = self._detect_affected_module()
+
+        # Get file extensions for Odoo projects
+        file_extensions = ['.py', '.xml', '.csv', '.json']
+
+        # Fetch all relevant files from repository
+        repo_files = github.get_repository_files(
+            file_extensions=file_extensions,
+            max_files=30,
+            branch=branch
         )
 
-        if not module_files:
+        if not repo_files:
             _logger.warning(
-                'No files found for module %s in repo %s',
-                module_name, partner.x_github_repo
+                'No files found in repo %s',
+                partner.x_github_repo
             )
             return ""
 
-        # Build code context
-        code_parts = [f"## Module: {module_name}\n"]
+        # If a module was detected, prioritize files from that module
+        if module_name:
+            # Sort files: affected module files first
+            def module_priority(file_info):
+                path = file_info['path'].lower()
+                if module_name.lower() in path:
+                    return 0
+                return 1
 
-        for file_info in module_files[:20]:  # Limit to 20 files to avoid token limits
+            repo_files.sort(key=module_priority)
+
+        # Build code context
+        if module_name:
+            code_parts = [f"## Repository Code (Affected Module: {module_name})\n"]
+        else:
+            code_parts = ["## Repository Code\n"]
+
+        for file_info in repo_files[:25]:  # Limit to 25 files to avoid token limits
             file_path = file_info['path']
             content = file_info.get('content', '')
 
             if content:
-                code_parts.append(f"\n### File: {file_path}\n```python\n{content}\n```")
+                # Determine language for syntax highlighting
+                lang = self._get_language_for_file(file_path)
+                code_parts.append(f"\n### File: {file_path}\n```{lang}\n{content}\n```")
 
+        _logger.info('Fetched %d Odoo files for ticket %s', min(len(repo_files), 25), self.id)
         return '\n'.join(code_parts)
 
-    def _fetch_custom_app_code(self, github):
-        """Fetch custom app code from GitHub based on key files or source path."""
+    def _fetch_custom_app_code(self, github, branch='main'):
+        """Fetch custom app code from GitHub by scanning the entire repository."""
         partner = self.partner_id
         project_type = partner.x_project_type or 'other'
 
         # Determine file extensions based on project type
         file_extensions = self._get_file_extensions_for_project(project_type)
 
-        # Get source path
-        source_path = partner.x_github_source_path or 'src'
-
-        # Try to fetch files from the source directory
         try:
-            app_files = github.get_app_files(
-                source_path,
-                file_extensions,
-                max_files=25
+            # Fetch all relevant files from entire repository
+            app_files = github.get_repository_files(
+                file_extensions=file_extensions,
+                max_files=30,
+                branch=branch
             )
-
-            if not app_files:
-                # Try root directory if source path doesn't work
-                app_files = github.get_app_files(
-                    '',
-                    file_extensions,
-                    max_files=25
-                )
 
             if not app_files:
                 _logger.warning(
@@ -917,9 +966,9 @@ Different Odoo models have different view structures. Know which elements exist 
                 return ""
 
             # Build code context
-            code_parts = [f"## Application Source Code\n"]
+            code_parts = ["## Application Source Code\n"]
 
-            for file_info in app_files:
+            for file_info in app_files[:25]:  # Limit to 25 files
                 file_path = file_info['path']
                 content = file_info.get('content', '')
 
@@ -928,6 +977,7 @@ Different Odoo models have different view structures. Know which elements exist 
                     lang = self._get_language_for_file(file_path)
                     code_parts.append(f"\n### File: {file_path}\n```{lang}\n{content}\n```")
 
+            _logger.info('Fetched %d app files for ticket %s', min(len(app_files), 25), self.id)
             return '\n'.join(code_parts)
 
         except Exception as e:

@@ -72,6 +72,9 @@ _perform_claude_analysis()
 
 **Library:**
 - `lib/github_integration.py` - GitHub API wrapper (repo access, file operations, PR creation)
+  - `get_markdown_files()` - Fetches `.md` documentation files from repository
+  - `get_repository_files()` - Scans entire repository for relevant source files
+  - `_walk_directory()` - Recursive directory traversal
 
 **Views (UI):**
 - `views/helpdesk_ticket_views.xml` - Ticket form buttons and tabs
@@ -80,10 +83,20 @@ _perform_claude_analysis()
 ### Data Flow
 
 1. **Ticket Analysis Request** → `action_analyze_with_claude()`
-2. **Build Context** → Fetch code from GitHub, load client config, add tech guidelines
-3. **Call Claude API** → With prompt caching (system context cached for 5 min)
-4. **Process Response** → Either clarification request or solution with code changes
-5. **Optional PR Creation** → Create branch, commit files, open PR
+2. **Build Context** → Fetch code from GitHub (entire repository), load client config, add tech guidelines
+3. **Fetch Documentation** → Automatically reads `.md` files (CLAUDE.md, README.md, etc.) from repository
+4. **Call Claude API** → With prompt caching (system context cached for 5 min)
+5. **Process Response** → Either clarification request or solution with code changes
+6. **Optional PR Creation** → Create branch, commit files, open PR
+
+### Repository Scanning
+
+The module automatically scans the **entire repository** from the configured default branch:
+- No need to specify "Addons Path" or "Source Path" - the module discovers files automatically
+- Markdown files (`.md`) in root and `docs/` directories are read for project context
+- Priority is given to: `CLAUDE.md`, `README.md`, config files, entry points, then other source files
+- Files are filtered by project type (Odoo: `.py`, `.xml`, `.csv`; Vue/React: `.vue`, `.tsx`, `.js`, etc.)
+- Large files are truncated, and common non-essential directories are skipped (node_modules, __pycache__, dist, etc.)
 
 ### Claude API Response Format
 
@@ -150,7 +163,9 @@ class MyModel(models.Model):
 | Service | Purpose | Configuration |
 |---------|---------|---------------|
 | Claude API | AI analysis | Settings > Claude AI section (API key) |
-| GitHub API | Code fetch, PR creation | Partner form > Claude AI & GitHub tab |
+| GitHub API | Code fetch, PR creation | Partner form > Claude AI & GitHub tab (repo URL, token, default branch) |
+
+**Note:** The "Addons Path in Repo" and "Source Code Path" fields have been removed. The module now automatically scans the entire repository from the default branch.
 
 ## Project Types Supported
 
