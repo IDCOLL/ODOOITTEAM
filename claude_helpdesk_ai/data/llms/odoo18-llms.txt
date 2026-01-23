@@ -1,0 +1,724 @@
+# Odoo 18 Developer Reference for AI Assistants
+
+> This file provides comprehensive context about Odoo 18 development patterns, ORM usage, view inheritance, shell commands, and common workflows. Feed this to AI assistants when working on Odoo 18 projects.
+
+## Quick Reference Links
+- Official Docs: https://www.odoo.com/documentation/18.0/developer.html
+- ORM API: https://www.odoo.com/documentation/18.0/developer/reference/backend/orm.html
+- Views: https://www.odoo.com/documentation/18.0/developer/reference/user_interface/view_records.html
+- Security: https://www.odoo.com/documentation/18.0/developer/reference/backend/security.html
+
+---
+
+## 1. ORM FUNDAMENTALS
+
+### Model Definition
+```python
+from odoo import models, fields, api
+
+class MyModel(models.Model):
+    _name = 'my.model'
+    _description = 'My Model Description'
+    _order = 'name asc, id desc'
+    _rec_name = 'name'  # Field used for display_name
+    
+    # Fields
+    name = fields.Char(string='Name', required=True)
+    active = fields.Boolean(default=True)  # Enables archive feature
+    company_id = fields.Many2one('res.company', default=lambda self: self.env.company)
+```
+
+### Field Types
+```python
+# Basic Fields
+name = fields.Char(string='Name', size=100, required=True, index=True, translate=True)
+description = fields.Text(string='Description')
+amount = fields.Float(string='Amount', digits=(16, 2))
+quantity = fields.Integer(string='Quantity', default=1)
+is_active = fields.Boolean(string='Active', default=True)
+date_start = fields.Date(string='Start Date', default=fields.Date.today)
+datetime_field = fields.Datetime(string='Datetime', default=fields.Datetime.now)
+state = fields.Selection([
+    ('draft', 'Draft'),
+    ('confirmed', 'Confirmed'),
+    ('done', 'Done'),
+], string='Status', default='draft', required=True)
+html_content = fields.Html(string='Content', sanitize=True)
+binary_file = fields.Binary(string='File', attachment=True)
+image = fields.Image(string='Image', max_width=1024, max_height=1024)
+
+# Relational Fields
+partner_id = fields.Many2one('res.partner', string='Partner', ondelete='cascade')
+# ondelete options: 'cascade', 'set null', 'restrict'
+
+line_ids = fields.One2many('my.model.line', 'parent_id', string='Lines')
+tag_ids = fields.Many2many('my.tag', string='Tags')
+# Full syntax: fields.Many2many('my.tag', 'my_model_tag_rel', 'model_id', 'tag_id')
+
+# Related/Computed
+partner_name = fields.Char(related='partner_id.name', string='Partner Name', store=True)
+```
+
+### Computed Fields
+```python
+total = fields.Float(string='Total', compute='_compute_total', store=True)
+
+@api.depends('line_ids.amount', 'line_ids.quantity')
+def _compute_total(self):
+    for record in self:
+        record.total = sum(line.amount * line.quantity for line in record.line_ids)
+
+# With inverse (allows user to set value)
+date_deadline = fields.Date(compute='_compute_deadline', inverse='_inverse_deadline', store=True)
+
+@api.depends('create_date', 'validity')
+def _compute_deadline(self):
+    for record in self:
+        if record.create_date:
+            record.date_deadline = record.create_date + timedelta(days=record.validity)
+
+def _inverse_deadline(self):
+    for record in self:
+        if record.date_deadline and record.create_date:
+            record.validity = (record.date_deadline - record.create_date.date()).days
+```
+
+### Model Inheritance
+
+#### Extension Inheritance (most common)
+```python
+class ResPartner(models.Model):
+    _inherit = 'res.partner'  # Extends existing model
+    
+    custom_field = fields.Char(string='Custom Field')
+    
+    def action_custom(self):
+        # Add new method
+        pass
+    
+    def write(self, vals):
+        # Override existing method
+        res = super().write(vals)
+        # Custom logic after write
+        return res
+```
+
+#### Delegation Inheritance
+```python
+class ChildModel(models.Model):
+    _name = 'child.model'
+    _inherits = {'parent.model': 'parent_id'}  # Delegation
+    
+    parent_id = fields.Many2one('parent.model', required=True, ondelete='cascade')
+    child_field = fields.Char()
+```
+
+### Environment and Context
+```python
+# Access environment
+self.env.user          # Current user
+self.env.company       # Current company
+self.env.companies     # All accessible companies
+self.env.context       # Current context dict
+self.env.cr            # Database cursor
+self.env.uid           # Current user id
+self.env.lang          # Current language
+
+# Get another model
+partners = self.env['res.partner'].search([])
+
+# Change context
+records = self.with_context(lang='fr_FR').search([])
+records = self.with_user(admin_user).create(vals)
+records = self.with_company(company).action_confirm()
+records = self.sudo().write(vals)  # Bypass access rights
+```
+
+### CRUD Operations
+```python
+# Create
+record = self.env['my.model'].create({
+    'name': 'Test',
+    'partner_id': partner.id,
+    'line_ids': [(0, 0, {'product_id': 1, 'quantity': 5})],
+})
+
+# Read
+record = self.env['my.model'].browse(record_id)  # By ID
+records = self.env['my.model'].search([('state', '=', 'draft')])  # By domain
+values = record.read(['name', 'state'])  # Get dict
+
+# Update
+record.write({'state': 'confirmed'})
+record.name = 'New Name'  # Direct assignment
+
+# Delete
+record.unlink()
+
+# One2many/Many2many special commands
+# (0, 0, values) - Create new record
+# (1, id, values) - Update existing record
+# (2, id, 0) - Delete record
+# (3, id, 0) - Unlink (remove from relation, don't delete)
+# (4, id, 0) - Link existing record
+# (5, 0, 0) - Unlink all
+# (6, 0, [ids]) - Replace all with provided ids
+```
+
+### Search and Domains
+```python
+# Basic search
+records = self.env['res.partner'].search([
+    ('is_company', '=', True),
+    ('country_id.code', '=', 'US'),
+])
+
+# Domain operators
+# =, !=, <, >, <=, >=
+# in, not in
+# like, ilike (case insensitive), =like, =ilike
+# child_of, parent_of (hierarchical)
+
+# Logic operators
+# '&' (AND, default), '|' (OR), '!' (NOT)
+domain = ['|', ('state', '=', 'draft'), ('state', '=', 'sent')]
+
+# Search options
+records = self.search(domain, limit=10, offset=0, order='name asc')
+count = self.search_count(domain)
+
+# Filtered/Mapped/Sorted
+active_records = records.filtered(lambda r: r.active)
+active_records = records.filtered('active')  # Shorthand
+names = records.mapped('name')
+partner_names = records.mapped('partner_id.name')
+sorted_records = records.sorted(key='name', reverse=True)
+```
+
+### Constraints
+```python
+from odoo.exceptions import ValidationError
+
+# SQL Constraint
+_sql_constraints = [
+    ('name_unique', 'UNIQUE(name)', 'Name must be unique!'),
+    ('check_amount', 'CHECK(amount >= 0)', 'Amount must be positive!'),
+]
+
+# Python Constraint
+@api.constrains('date_start', 'date_end')
+def _check_dates(self):
+    for record in self:
+        if record.date_start and record.date_end:
+            if record.date_start > record.date_end:
+                raise ValidationError("End date must be after start date!")
+```
+
+### Onchange Methods
+```python
+@api.onchange('partner_id')
+def _onchange_partner(self):
+    if self.partner_id:
+        self.delivery_address = self.partner_id.street
+        return {'warning': {
+            'title': 'Warning',
+            'message': 'Partner changed!'
+        }}
+```
+
+---
+
+## 2. VIEW INHERITANCE
+
+### Basic Structure
+```xml
+<record id="view_my_model_form_inherit" model="ir.ui.view">
+    <field name="name">my.model.form.inherit</field>
+    <field name="model">my.model</field>
+    <field name="inherit_id" ref="module_name.view_my_model_form"/>
+    <field name="arch" type="xml">
+        <!-- inheritance specs here -->
+    </field>
+</record>
+```
+
+### XPath Expressions
+```xml
+<!-- Find by field name -->
+<xpath expr="//field[@name='partner_id']" position="after">
+    <field name="new_field"/>
+</xpath>
+
+<!-- Find by element name attribute -->
+<xpath expr="//page[@name='other_info']" position="inside">
+    <field name="custom_field"/>
+</xpath>
+
+<!-- Find by position in tree -->
+<xpath expr="//sheet/group[1]" position="after">
+    <group name="custom_group">
+        <field name="field1"/>
+    </group>
+</xpath>
+
+<!-- Shorthand (when element is unique) -->
+<field name="partner_id" position="after">
+    <field name="new_field"/>
+</field>
+```
+
+### Position Attributes
+```xml
+<!-- before: Add before the matched element -->
+<field name="name" position="before">
+    <field name="code"/>
+</field>
+
+<!-- after: Add after the matched element -->
+<field name="name" position="after">
+    <field name="description"/>
+</field>
+
+<!-- inside: Add inside the matched element (at end) -->
+<xpath expr="//page[@name='details']" position="inside">
+    <field name="extra_info"/>
+</xpath>
+
+<!-- replace: Replace the matched element entirely -->
+<field name="old_field" position="replace">
+    <field name="new_field"/>
+</field>
+
+<!-- attributes: Modify attributes -->
+<field name="partner_id" position="attributes">
+    <attribute name="invisible">1</attribute>
+    <attribute name="required">1</attribute>
+    <attribute name="readonly">state != 'draft'</attribute>
+    <attribute name="domain">[('is_company', '=', True)]</attribute>
+</field>
+
+<!-- move: Move element to new location -->
+<xpath expr="//field[@name='target_field']" position="after">
+    <xpath expr="//field[@name='field_to_move']" position="move"/>
+</xpath>
+```
+
+### View Modes
+```xml
+<!-- Primary mode: Creates independent view based on parent -->
+<record id="view_custom_form" model="ir.ui.view">
+    <field name="name">custom.form</field>
+    <field name="model">res.partner</field>
+    <field name="inherit_id" ref="base.view_partner_form"/>
+    <field name="mode">primary</field>  <!-- Key difference -->
+    <field name="arch" type="xml">
+        <xpath expr="//field[@name='name']" position="after">
+            <field name="custom"/>
+        </xpath>
+    </field>
+</record>
+```
+
+---
+
+## 3. SHELL COMMANDS AND DATA FIXES
+
+### Starting Odoo Shell
+```bash
+# Basic shell
+odoo-bin shell -d database_name
+
+# With specific config
+odoo-bin shell -c /etc/odoo/odoo.conf -d database_name
+
+# Docker
+docker exec -it container_name odoo shell -d database_name
+```
+
+### Recompute Stored Computed Fields
+```python
+# Odoo 13+ method (recommended)
+model = env['my.model']
+env.add_to_compute(model._fields['computed_field'], model.search([]))
+model.recompute()
+env.cr.commit()
+
+# Alternative: Direct method call (Odoo 17+)
+for record in env['my.model'].search([]):
+    record._compute_my_field()
+env.cr.commit()
+
+# Batch processing for large datasets
+batch_size = 1000
+records = env['my.model'].search([])
+for i in range(0, len(records), batch_size):
+    batch = records[i:i + batch_size]
+    env.add_to_compute(model._fields['computed_field'], batch)
+    model.recompute()
+    env.cr.commit()
+```
+
+### Common Data Fixes
+```python
+# Mass update
+env['res.partner'].search([('country_id', '=', False)]).write({
+    'country_id': env.ref('base.us').id
+})
+env.cr.commit()
+
+# Fix orphaned records
+orphans = env['sale.order.line'].search([('order_id', '=', False)])
+orphans.unlink()
+env.cr.commit()
+
+# Reset sequences
+env['ir.sequence'].search([('code', '=', 'sale.order')]).write({
+    'number_next': 1000
+})
+env.cr.commit()
+
+# Direct SQL (use sparingly)
+env.cr.execute("""
+    UPDATE res_partner 
+    SET active = false 
+    WHERE id IN (SELECT partner_id FROM inactive_partners_view)
+""")
+env.cr.commit()
+```
+
+### Useful Shell Snippets
+```python
+# Get record by XML ID
+partner = env.ref('base.partner_demo')
+
+# Find XML ID of record
+env['ir.model.data'].search([
+    ('model', '=', 'res.partner'),
+    ('res_id', '=', partner.id)
+])
+
+# Export to CSV
+import csv
+with open('/tmp/partners.csv', 'w') as f:
+    writer = csv.writer(f)
+    writer.writerow(['ID', 'Name', 'Email'])
+    for p in env['res.partner'].search([]):
+        writer.writerow([p.id, p.name, p.email])
+
+# Check field definition
+print(env['sale.order']._fields['state'])
+```
+
+---
+
+## 4. SECURITY
+
+### Access Rights (ir.model.access.csv)
+```csv
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_my_model_user,my.model.user,model_my_model,base.group_user,1,1,1,0
+access_my_model_manager,my.model.manager,model_my_model,my_module.group_manager,1,1,1,1
+```
+
+### Record Rules (security.xml)
+```xml
+<record id="my_model_company_rule" model="ir.rule">
+    <field name="name">My Model: Multi-Company</field>
+    <field name="model_id" ref="model_my_model"/>
+    <field name="domain_force">[
+        '|',
+        ('company_id', '=', False),
+        ('company_id', 'in', company_ids)
+    ]</field>
+    <field name="groups" eval="[(4, ref('base.group_user'))]"/>
+</record>
+
+<record id="my_model_own_rule" model="ir.rule">
+    <field name="name">My Model: Own Records Only</field>
+    <field name="model_id" ref="model_my_model"/>
+    <field name="domain_force">[('user_id', '=', user.id)]</field>
+    <field name="groups" eval="[(4, ref('my_module.group_user'))]"/>
+    <field name="perm_read" eval="True"/>
+    <field name="perm_write" eval="True"/>
+    <field name="perm_create" eval="True"/>
+    <field name="perm_unlink" eval="False"/>
+</record>
+```
+
+---
+
+## 5. MODULE STRUCTURE
+
+```
+my_module/
+├── __init__.py
+├── __manifest__.py
+├── models/
+│   ├── __init__.py
+│   └── my_model.py
+├── views/
+│   ├── my_model_views.xml
+│   └── menu_views.xml
+├── security/
+│   ├── ir.model.access.csv
+│   └── security.xml
+├── data/
+│   └── data.xml
+├── demo/
+│   └── demo.xml
+├── wizard/
+│   ├── __init__.py
+│   └── my_wizard.py
+├── report/
+│   └── report_templates.xml
+├── static/
+│   └── description/
+│       └── icon.png
+└── i18n/
+    └── fr.po
+```
+
+### Manifest File (__manifest__.py)
+```python
+{
+    'name': 'My Module',
+    'version': '18.0.1.0.0',
+    'category': 'Sales',
+    'summary': 'Short description',
+    'description': """
+        Long description
+    """,
+    'author': 'Your Company',
+    'website': 'https://www.yourcompany.com',
+    'license': 'LGPL-3',
+    'depends': ['base', 'sale'],
+    'data': [
+        'security/security.xml',
+        'security/ir.model.access.csv',
+        'views/my_model_views.xml',
+        'views/menu_views.xml',
+        'data/data.xml',
+    ],
+    'demo': [
+        'demo/demo.xml',
+    ],
+    'assets': {
+        'web.assets_backend': [
+            'my_module/static/src/js/*.js',
+            'my_module/static/src/css/*.css',
+        ],
+    },
+    'installable': True,
+    'application': True,
+    'auto_install': False,
+}
+```
+
+---
+
+## 6. COMMON PATTERNS
+
+### Sequence Generation
+```python
+class MyModel(models.Model):
+    _name = 'my.model'
+    
+    name = fields.Char(string='Reference', readonly=True, default='New')
+    
+    @api.model_create_multi
+    def create(self, vals_list):
+        for vals in vals_list:
+            if vals.get('name', 'New') == 'New':
+                vals['name'] = self.env['ir.sequence'].next_by_code('my.model') or 'New'
+        return super().create(vals_list)
+```
+
+### State Machine
+```python
+class MyModel(models.Model):
+    _name = 'my.model'
+    
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('confirmed', 'Confirmed'),
+        ('done', 'Done'),
+        ('cancelled', 'Cancelled'),
+    ], default='draft', tracking=True)
+    
+    def action_confirm(self):
+        self.write({'state': 'confirmed'})
+    
+    def action_done(self):
+        self.write({'state': 'done'})
+    
+    def action_cancel(self):
+        self.write({'state': 'cancelled'})
+    
+    def action_draft(self):
+        self.write({'state': 'draft'})
+```
+
+### Scheduled Actions (Cron)
+```xml
+<record id="ir_cron_my_action" model="ir.cron">
+    <field name="name">My Scheduled Action</field>
+    <field name="model_id" ref="model_my_model"/>
+    <field name="state">code</field>
+    <field name="code">model._cron_my_method()</field>
+    <field name="interval_number">1</field>
+    <field name="interval_type">days</field>
+    <field name="numbercall">-1</field>
+    <field name="active">True</field>
+</record>
+```
+
+### Mail Thread Integration
+```python
+class MyModel(models.Model):
+    _name = 'my.model'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
+    
+    name = fields.Char(tracking=True)
+    state = fields.Selection([...], tracking=True)
+    partner_id = fields.Many2one('res.partner', tracking=True)
+    
+    def action_confirm(self):
+        self.write({'state': 'confirmed'})
+        self.message_post(body="Order confirmed!")
+```
+
+---
+
+## 7. DEBUGGING AND LOGGING
+
+```python
+import logging
+_logger = logging.getLogger(__name__)
+
+_logger.debug('Debug message: %s', variable)
+_logger.info('Info message')
+_logger.warning('Warning message')
+_logger.error('Error message')
+_logger.exception('Exception occurred')  # Includes traceback
+
+# In shell
+import pdb; pdb.set_trace()  # Breakpoint
+```
+
+---
+
+## 8. PERFORMANCE TIPS
+
+```python
+# Prefetch fields
+partners = self.env['res.partner'].search([])
+partners.mapped('name')  # Prefetches in batch
+
+# Avoid N+1 queries
+for order in orders.with_prefetch(orders.ids):
+    print(order.partner_id.name)
+
+# Use read() for bulk operations
+data = records.read(['name', 'state'])
+
+# Disable tracking for bulk operations
+records.with_context(tracking_disable=True).write(vals)
+
+# Use SQL for heavy reports
+self.env.cr.execute("""
+    SELECT partner_id, SUM(amount)
+    FROM account_move
+    WHERE state = 'posted'
+    GROUP BY partner_id
+""")
+results = self.env.cr.dictfetchall()
+```
+
+---
+
+## 9. MIGRATION SCRIPTS
+
+### Pre-migrate (before module update)
+```python
+# migrations/18.0.1.0.1/pre-migrate.py
+def migrate(cr, version):
+    # Rename column before ORM sees it
+    cr.execute("""
+        ALTER TABLE my_model 
+        RENAME COLUMN old_name TO new_name
+    """)
+```
+
+### Post-migrate (after module update)
+```python
+# migrations/18.0.1.0.1/post-migrate.py
+from odoo import api, SUPERUSER_ID
+
+def migrate(cr, version):
+    env = api.Environment(cr, SUPERUSER_ID, {})
+    
+    # Update data using ORM
+    records = env['my.model'].search([('state', '=', 'old_state')])
+    records.write({'state': 'new_state'})
+    
+    # Or direct SQL
+    cr.execute("""
+        UPDATE my_model 
+        SET state = 'new_state' 
+        WHERE state = 'old_state'
+    """)
+```
+
+---
+
+## 10. ODOO 18 SPECIFIC FEATURES
+
+- Python 3.10+ required
+- Improved OWL framework integration
+- Enhanced web client performance
+- New spreadsheet features
+- Updated accounting features
+- Improved multi-company handling
+
+### New in Odoo 18
+```python
+# Precompute for faster record creation
+total = fields.Float(compute='_compute_total', store=True, precompute=True)
+
+# Recursive dependencies
+@api.depends('parent_id.total')  # Works with recursive=True
+def _compute_total(self):
+    for record in self:
+        record.total = record.amount + (record.parent_id.total or 0)
+
+# Field defined with recursive flag
+total = fields.Float(compute='_compute_total', store=True, recursive=True)
+```
+
+---
+
+## QUICK COMMAND REFERENCE
+
+```bash
+# Start server
+odoo-bin -c odoo.conf
+
+# Update module
+odoo-bin -c odoo.conf -d database -u module_name
+
+# Install module  
+odoo-bin -c odoo.conf -d database -i module_name
+
+# Shell access
+odoo-bin shell -c odoo.conf -d database
+
+# Scaffold new module
+odoo-bin scaffold module_name /path/to/addons
+
+# Database operations
+odoo-bin -c odoo.conf -d database --stop-after-init  # Test startup
+```
+
+---
+
+*Last updated: January 2025 | Odoo 18.0*

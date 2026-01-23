@@ -3,6 +3,7 @@
 
 import json
 import logging
+import os
 import re
 from datetime import datetime
 from odoo import api, fields, models, _
@@ -337,7 +338,77 @@ Your task is to analyze support tickets and provide detailed solutions with code
             return self._get_general_guidelines()
 
     def _get_odoo_guidelines(self):
-        """Return Odoo-specific development guidelines."""
+        """Return Odoo-specific development guidelines.
+
+        Loads comprehensive guidelines from version-specific LLMs files
+        when available, falling back to basic guidelines otherwise.
+        """
+        partner = self.partner_id
+        odoo_version = partner.x_odoo_version if partner else None
+
+        # Try to load version-specific LLMs file
+        if odoo_version in ('18', '19'):
+            llms_content = self._load_odoo_llms_file(odoo_version)
+            if llms_content:
+                # Prepend critical view inheritance knowledge not in LLMs files
+                view_inheritance_note = self._get_view_inheritance_critical_notes()
+                return f"{llms_content}\n\n{view_inheritance_note}"
+
+        # Fallback to basic guidelines for older versions or if file not found
+        return self._get_basic_odoo_guidelines()
+
+    def _load_odoo_llms_file(self, version):
+        """Load the Odoo LLMs reference file for the specified version.
+
+        Args:
+            version: Odoo version string ('18' or '19')
+
+        Returns:
+            File content as string, or None if file not found
+        """
+        try:
+            # Get the module's data directory path
+            module_path = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+            llms_file = os.path.join(module_path, 'data', 'llms', f'odoo{version}-llms.txt')
+
+            if os.path.exists(llms_file):
+                with open(llms_file, 'r', encoding='utf-8') as f:
+                    content = f.read()
+                _logger.info('Loaded Odoo %s LLMs reference file (%d chars)', version, len(content))
+                return content
+            else:
+                _logger.warning('Odoo %s LLMs file not found at %s', version, llms_file)
+                return None
+        except Exception as e:
+            _logger.error('Failed to load Odoo %s LLMs file: %s', version, str(e))
+            return None
+
+    def _get_view_inheritance_critical_notes(self):
+        """Return critical view inheritance notes that supplement the LLMs files."""
+        return """## View Inheritance - CRITICAL Knowledge (Supplemental)
+
+Different Odoo models have different view structures. Know which elements exist before using xpath:
+
+### Views WITH <header> element (have status bar/workflow buttons):
+- sale.order, purchase.order, account.move (invoices)
+- helpdesk.ticket, project.task, crm.lead
+- stock.picking, mrp.production
+- hr.expense, hr.leave
+
+### Views WITHOUT <header> element:
+- res.partner (contacts) - use //div[hasclass('oe_button_box')] or //sheet instead
+- res.users - use //sheet
+- product.template, product.product - use //div[hasclass('oe_button_box')]
+- res.company - no header
+
+### ALWAYS verify before using xpath:
+1. Check the code context provided to see the actual view structure
+2. If unsure, ask for clarification about available elements
+3. Never assume a view has elements just because other views do
+"""
+
+    def _get_basic_odoo_guidelines(self):
+        """Return basic Odoo guidelines for older versions or fallback."""
         return """# ODOO DEVELOPMENT BEST PRACTICES
 
 ## Framework Guidelines
