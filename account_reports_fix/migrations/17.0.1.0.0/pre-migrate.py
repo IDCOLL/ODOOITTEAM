@@ -17,7 +17,7 @@ def migrate(cr, version):
     tag_ids = [row[0] for row in cr.fetchall()]
     _logger.info("Step a: Found %d account_account_tag ids: %s", len(tag_ids), tag_ids)
 
-    # Step b: Reset tax_tag_invert on posted out_invoice lines linked to those tags
+    # Step b: Reset tax_tag_invert on ALL out_invoice lines linked to those tags (any state)
     if tag_ids:
         cr.execute("""
             UPDATE account_move_line aml
@@ -28,7 +28,6 @@ def migrate(cr, version):
               AND rel.account_move_line_id = aml.id
               AND am.id = aml.move_id
               AND am.move_type = 'out_invoice'
-              AND am.state = 'posted'
               AND aml.tax_tag_invert = TRUE
         """, (tag_ids,))
         _logger.info("Step b: Updated %d account_move_line rows (tax_tag_invert -> FALSE)", cr.rowcount)
