@@ -22,10 +22,11 @@ def migrate(cr, version):
         cr.execute("""
             UPDATE account_move_line aml
             SET tax_tag_invert = FALSE
-            FROM account_account_tag_account_move_line_rel rel
-            JOIN account_move am ON am.id = aml.move_id
+            FROM account_account_tag_account_move_line_rel rel,
+                 account_move am
             WHERE rel.account_account_tag_id = ANY(%s)
               AND rel.account_move_line_id = aml.id
+              AND am.id = aml.move_id
               AND am.move_type = 'out_invoice'
               AND am.state = 'posted'
               AND aml.tax_tag_invert = TRUE
